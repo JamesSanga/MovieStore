@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pre_sort_oder">
+        <item>@string/favorite</item>
+        <item>@string/most_rated</item>
+        <item>@string/popular</item>
+    </string-array>
+</resources>
