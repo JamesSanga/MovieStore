@@ -126,9 +126,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
     }
 
-    public void add (Movie r){
+    public void add(Movie r){
         movieResults.add(r);
-        notifyItemInserted(movieResults.size()*1);
+        notifyItemInserted(movieResults.size()-1);
     }
 
     public void addAll(List<Movie> movieResults){

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isLoading = false;
     private boolean isLastPage = false;
 
-    private int TOTAL_PAGES = 10;
+    private int TOTAL_PAGES = 8;
     private int currentPage = PAGE_START;
 
     private Service movieService;
