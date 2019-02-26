@@ -1,7 +1,6 @@
 package com.tz.sanga.moviestore.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,14 +15,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.tz.sanga.moviestore.Activities.ScrollingActivity;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int ITEM = 0;
     private static final int LOADING = 1;
@@ -34,7 +32,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private boolean isLoadingAdded = false;
 
-    public MoviesAdapter(Context context) {
+    public RelatedAdapter(Context context) {
         this.context = context;
         movieResults = new ArrayList<>();
 
@@ -55,10 +53,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case ITEM:
                 viewHolder = getViewHolder(parent, inflater);
                 break;
-            case LOADING:
-                View view = inflater.inflate(R.layout.page_loader, parent, false);
-                viewHolder = new loadingVH(view);
-                break;
         }
         return viewHolder;
     }
@@ -66,8 +60,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @NonNull
     private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater){
         RecyclerView.ViewHolder viewHolder;
-        View v1 = inflater.inflate(R.layout.movie_layout, parent, false);
-        viewHolder = new MovieVH(v1);
+        View v1 = inflater.inflate(R.layout. related_layout, parent, false);
+        viewHolder = new RelatedAdapter.MovieVH(v1);
         return viewHolder;
     }
 
@@ -77,17 +71,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         switch (getItemViewType(position)){
             case ITEM:
-               // final MovieVH movieVH = (MovieVH) holder;
-                final MovieVH movieVH = (MovieVH) holder;
+                // final MovieVH movieVH = (MovieVH) holder;
+                final RelatedAdapter.MovieVH movieVH = (RelatedAdapter.MovieVH) holder;
                 movieVH.textViewTitle.setText(result.getTitle());
-                movieVH.textViewDate.setText(
-                        result.getReleaseDate().substring(0, 4)//year only
-                                + " | "+ result.getOriginalLanguage().toUpperCase());
-                movieVH.textViewVoteAverage.setText("Vote average" + ": "+String.valueOf(result.getVoteAverage()));
+                movieVH.textViewDate.setText(result.getReleaseDate());
+                movieVH.textViewVoteAverage.setText(String.valueOf(result.getVoteAverage()));
 
                 //load images by glide library
 
-                Glide .with(context).load(BASE_URL_IMG + result.getPosterPath())
+                Glide.with(context).load(BASE_URL_IMG + result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -137,47 +129,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public void remove(Movie r){
-        int position = movieResults.indexOf(r);
-        if (position > -1){
-            movieResults.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    public void clear(){
-        isLoadingAdded = false;
-        while (getItemCount() > 0){
-            remove(getItem(0));
-        }
-    }
-    public boolean isEmpty(){
-        return getItemCount() == 0;
-    }
-
-    public void addLoadingFooter(){
-        isLoadingAdded = true;
-        add(new Movie());
-    }
-    public void removeLoadingFooter(){
-        isLoadingAdded = false;
-        int position = movieResults.size()- 1;
-        Movie result = getItem(position);
-
-        if (result != null){
-            movieResults.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    public Movie getItem(int position){
-        return movieResults.get(position);
-    }
-
     protected class MovieVH extends RecyclerView.ViewHolder{
         private ImageView imageView;
         private ProgressBar progressBar;
-        public TextView textViewTitle;
+        private TextView textViewTitle;
         private TextView textViewDate;
         private TextView textViewVoteAverage;
 
@@ -189,31 +144,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             textViewTitle = itemView.findViewById(R.id.movie_title);
             textViewDate = itemView.findViewById(R.id.release_date);
             textViewVoteAverage = itemView.findViewById(R.id.vote_average);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Do something here when item clicked
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION){
-                        Intent intent = new Intent(context, ScrollingActivity.class);
-                        intent.putExtra("original_title", movieResults.get(position).getOriginalTile());
-                        intent.putExtra("overview", movieResults.get(position).getOverview());
-                        intent.putExtra("poster_path", movieResults.get(position).getPosterPath());
-                        intent.putExtra("average_vote", movieResults.get(position).getVoteAverage());
-                        context.startActivity(intent);
-                    }
-                }
-            });
-
         }
 
     }
 
-    protected class loadingVH extends RecyclerView.ViewHolder{
-
-        public loadingVH(View itemView) {
-            super(itemView);
-        }
-    }
 }

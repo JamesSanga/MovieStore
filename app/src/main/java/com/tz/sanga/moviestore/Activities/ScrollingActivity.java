@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,18 +15,37 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
+import com.tz.sanga.moviestore.API.Connector;
+import com.tz.sanga.moviestore.API.Service;
+import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
+import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Database.FavoriteDb;
 import com.tz.sanga.moviestore.Model.Movie;
+import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     TextView textViewTitle, textViewOverView;
+    MultiSnapRecyclerView multiSnapRecyclerView;
     ImageView imageView;
     private FavoriteDb favoriteDb;
     private Movie favorite;
     String originalTitle;
+    RelatedAdapter adapter;
+    LinearLayoutManager layoutManager;
     private final AppCompatActivity activity = ScrollingActivity.this;
+    private Service movieService;
+
+    private static final int PAGE_START = 1;
+    private int currentPage = PAGE_START;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +60,7 @@ public class ScrollingActivity extends AppCompatActivity {
         textViewTitle = findViewById(R.id.move_title_name);
         textViewOverView = findViewById(R.id.details);
         imageView = findViewById(R.id.poster_image);
+        multiSnapRecyclerView = findViewById(R.id.relatedMovies);
 
         originalTitle = getIntent().getExtras().getString("original_title");
         String averageVote = getIntent().getExtras().getString("average_vote");
@@ -47,12 +69,23 @@ public class ScrollingActivity extends AppCompatActivity {
 
         //load image to image view
         Glide.with(this).load(BASE_URL_IMG + thumbnail).placeholder(R.drawable.loading).into(imageView);
+        //adapter = new MoviesAdapter(this);
+        adapter = new RelatedAdapter(this);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        multiSnapRecyclerView.setLayoutManager(layoutManager);
 
+        multiSnapRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        multiSnapRecyclerView.setAdapter(adapter);
 
         textViewTitle.setText(originalTitle);
         textViewOverView.setText(overView);
 
         saveMovieDetails();
+
+
+        //init service and load data
+        movieService = Connector.getConnector().create(Service.class);
+        loaFirstPage();
 
     }
 
@@ -100,6 +133,39 @@ public class ScrollingActivity extends AppCompatActivity {
         favorite.setPosterPath(poster);
 
         favoriteDb.addFavorite(favorite);
+    }
+
+    private void loaFirstPage(){
+
+        callTopRatedMoviesApi().enqueue(new Callback<MoviesResponse>(){
+
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+
+                //got data and send them to adapter
+                List<Movie> results = fetchResults(response);
+                adapter.addAll(results);
+
+            }
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private List<Movie> fetchResults(Response<MoviesResponse> response){
+        MoviesResponse topRatedMovies = response.body();
+        return topRatedMovies.getResults();
+    }
+
+    private Call<MoviesResponse> callTopRatedMoviesApi(){
+        return movieService.getTopRatedMovies(
+                BuildConfig.THE_MOVIE_DB_API_TOKEN,
+                currentPage
+
+        );
     }
 
 }

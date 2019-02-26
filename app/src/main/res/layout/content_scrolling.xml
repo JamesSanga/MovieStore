@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
-
+        android:padding="10dp">
 
             <TextView android:id="@+id/move_title_name"
                 android:layout_width="match_parent"
@@ -31,6 +30,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-    </LinearLayout>
+        <TextView
+            android:text="Related movies"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/fab_margin"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
+        <com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
+            android:layout_marginTop="@dimen/fab_margin"
+            android:id="@+id/relatedMovies"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            app:msrv_gravity="start"
+            app:msrv_ms_per_inch="100"
+            app:msrv_snap_count="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView>
+
+    </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
