@@ -1,12 +1,18 @@
 package com.tz.sanga.moviestore.Activities;
 
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -20,6 +26,7 @@ import com.tz.sanga.moviestore.R;
 import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
 
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isLoading = false;
     private boolean isLastPage = false;
 
-    private int TOTAL_PAGES = 8;
+    private int TOTAL_PAGES = 100;
     private int currentPage = PAGE_START;
 
     private Service movieService;
@@ -92,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         //init service and load data
         movieService = Connector.getConnector().create(Service.class);
-        loaFirstPage();
+        loadMovies();
     }
 
     private void loaFirstPage(){
@@ -117,6 +124,30 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            showChangeMoviesOptions();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private List<Movie> fetchResults(Response<MoviesResponse> response){
@@ -153,5 +184,116 @@ public class MainActivity extends AppCompatActivity {
                 currentPage
 
         );
+    }
+    private Call<MoviesResponse> callTopRatedMoviesApi(){
+        return movieService.getTopRatedMovies(
+                BuildConfig.THE_MOVIE_DB_API_TOKEN,
+                currentPage
+
+        );
+    }
+//
+//    @Override
+//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+//        Log.d(TAG, "onSharedPreferenceChanged: Shared updated");
+//        sortOder();
+//    }
+
+//    private void sortOder() {
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        String sortOrder = preferences.getString(
+//                this.getString(R.string.key),
+//                this.getString(R.string.popular)
+//                );
+//
+//        if (sortOrder.equals(this.getString(R.string.popular))){
+//            Log.d(TAG, "sortOder: Sorting by most popular");
+//            loaFirstPage();
+//        }else {
+//            Log.d(TAG, "sortOder: Sorting by top rated");
+//            loaFirstPage1();
+//        }
+//    }
+
+    private void loaFirstPage1() {
+        callTopRatedMoviesApi(). enqueue(new Callback<MoviesResponse>(){
+
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+
+                //got data and send them to adapter
+                List<Movie> results = fetchResults(response);
+                progressBar.setVisibility(View.GONE);
+                adapter.addAll(results);
+
+                if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        sortOder();
+//    }
+
+    private void showChangeMoviesOptions() {
+        final String [] moviesOptions ={"Popular movies", "Top rated movies"};
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+        mBuilder.setTitle("Choose movies type to display");
+        mBuilder.setSingleChoiceItems(moviesOptions, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                if (i==0){
+//                    Set popular movies
+                    setMovies("P");
+                }else if (i==1) {
+                    //set Top rated movies
+                    setMovies("T");
+                }
+                dialogInterface.dismiss();
+            }
+        });
+
+        AlertDialog mDialog = mBuilder.create();
+//        show dialog
+        mDialog.show();
+    }
+
+    private void setMovies(String movies) {
+        Locale locale = new Locale(movies);
+        locale.setDefault(locale);
+        Configuration configuration = new Configuration();
+        configuration.locale = locale;
+        getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
+
+//        save data to shared preferences
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putString("My_movie", movies );
+        editor.apply();
+
+    }
+//    load movies shared in preferences
+
+    public void loadMovies(){
+        SharedPreferences sharedPreferences = getSharedPreferences("Settings", MODE_PRIVATE);
+        String Movie = sharedPreferences.getString("My_movie", "");
+        if (Movie.equals("P")){
+            loaFirstPage();
+        }
+        else if (Movie.equals("T")){
+            loaFirstPage1();
+        }
+        else {
+            loaFirstPage();
+        }
     }
 }
