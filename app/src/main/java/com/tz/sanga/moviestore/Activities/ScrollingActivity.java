@@ -1,18 +1,20 @@
 package com.tz.sanga.moviestore.Activities;
 
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
@@ -25,6 +27,7 @@ import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -36,9 +39,9 @@ public class ScrollingActivity extends AppCompatActivity {
     TextView textViewTitle, textViewOverView;
     MultiSnapRecyclerView multiSnapRecyclerView;
     ImageView imageView;
-    private FavoriteDb favoriteDb;
-    private Movie favorite;
-    String originalTitle;
+    ListView listView;
+    private FavoriteDb favoriteDb, getDb;
+    String originalTitle, averageVote, overView, thumbnail;
     RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
     private final AppCompatActivity activity = ScrollingActivity.this;
@@ -46,6 +49,8 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private static final int PAGE_START = 1;
     private int currentPage = PAGE_START;
+
+    ArrayList<String> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +66,12 @@ public class ScrollingActivity extends AppCompatActivity {
         textViewOverView = findViewById(R.id.details);
         imageView = findViewById(R.id.poster_image);
         multiSnapRecyclerView = findViewById(R.id.relatedMovies);
+        listView = findViewById(R.id.listData);
 
         originalTitle = getIntent().getExtras().getString("original_title");
-        String averageVote = getIntent().getExtras().getString("average_vote");
-        String overView = getIntent().getExtras().getString("overview");
-        String thumbnail = getIntent().getExtras().getString("poster_path");
+        averageVote = getIntent().getExtras().getString("average_vote");
+        overView = getIntent().getExtras().getString("overview");
+        thumbnail = getIntent().getExtras().getString("poster_path");
 
         //load image to image view
         Glide.with(this).load(BASE_URL_IMG + thumbnail).placeholder(R.drawable.loading).into(imageView);
@@ -81,8 +87,7 @@ public class ScrollingActivity extends AppCompatActivity {
         textViewOverView.setText(overView);
 
         saveMovieDetails();
-
-
+        loadSqliteData();
         //init service and load data
         movieService = Connector.getConnector().create(Service.class);
         loaFirstPage();
@@ -102,17 +107,10 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private void saveMovieDetails() {
         final FloatingActionButton floatingActionButton = findViewById(R.id.fab);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = getSharedPreferences("com.tz.sanga.moviestore.Activities.ScrollingActivity",MODE_PRIVATE).edit();
-                editor.putBoolean("Movie details saved successful", true);
-                editor.commit();
-
-                Snackbar.make(floatingActionButton,"Details saved",Snackbar.LENGTH_LONG).show();
-
                 addToSqlDB();
             }
         });
@@ -121,18 +119,38 @@ public class ScrollingActivity extends AppCompatActivity {
 
     public void addToSqlDB() {
 
-        favoriteDb = new FavoriteDb(activity);
-        favorite = new Movie();
-        int movie_id = getIntent().getExtras().getInt("id");
-        String rate = getIntent().getExtras().getString("vote_average");
-        String poster = getIntent().getExtras().getString("poster_path");
+        favoriteDb = new FavoriteDb(this);
+        boolean insertData = favoriteDb.addFavorite(originalTitle, averageVote, overView, thumbnail);
 
-        favorite.setId(movie_id);
-        favorite.setOriginalTile(textViewTitle.getText().toString().trim());
-        favorite.setOverview(textViewOverView.getText().toString().trim());
-        favorite.setPosterPath(poster);
+        if (insertData == true){
+            Toast.makeText(ScrollingActivity.this, "Successful", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(ScrollingActivity.this, "Not successful", Toast.LENGTH_LONG).show();
+        }
+    }
 
-        favoriteDb.addFavorite(favorite);
+    public void loadSqliteData(){
+
+        getDb = new FavoriteDb(this);
+        Cursor data = getDb.getMovies();
+
+        if (data.getCount() == 0){
+            TextView textView = findViewById(R.id.favorite_movies);
+            textView.setVisibility(View.GONE);
+        }else {
+            TextView textView = findViewById(R.id.favorite_movies);
+            textView.setVisibility(View.VISIBLE);
+            while (data.moveToNext()){
+             //  list.add(data.getString(1));
+                list.add(data.getString(2));
+              //  list.add(data.getString(3));
+              //  list.add(data.getString(4));
+
+                ListAdapter listAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, list);
+                listView.setAdapter(listAdapter);
+
+            }
+        }
     }
 
     private void loaFirstPage(){
