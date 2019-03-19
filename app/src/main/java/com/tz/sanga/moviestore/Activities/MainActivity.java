@@ -192,28 +192,6 @@ public class MainActivity extends AppCompatActivity {
 
         );
     }
-//
-//    @Override
-//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-//        Log.d(TAG, "onSharedPreferenceChanged: Shared updated");
-//        sortOder();
-//    }
-
-//    private void sortOder() {
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        String sortOrder = preferences.getString(
-//                this.getString(R.string.key),
-//                this.getString(R.string.popular)
-//                );
-//
-//        if (sortOrder.equals(this.getString(R.string.popular))){
-//            Log.d(TAG, "sortOder: Sorting by most popular");
-//            loaFirstPage();
-//        }else {
-//            Log.d(TAG, "sortOder: Sorting by top rated");
-//            loaFirstPage1();
-//        }
-//    }
 
     private void loaFirstPage1() {
         callTopRatedMoviesApi(). enqueue(new Callback<MoviesResponse>(){
@@ -238,11 +216,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        sortOder();
-//    }
 
     private void showChangeMoviesOptions() {
         final String [] moviesOptions ={"Popular movies", "Top rated movies"};
