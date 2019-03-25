@@ -19,7 +19,6 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'THE_MOVIE_DB_API_TOKEN', myTheMovieDBApiToken
     }
-    buildToolsVersion '27.0.3'
 }
 
 dependencies {
