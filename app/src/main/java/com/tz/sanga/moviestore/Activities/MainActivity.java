@@ -28,35 +28,32 @@ import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity{
+
     private static final String TAG = "MainActivity";
     MoviesAdapter adapter;
     LinearLayoutManager layoutManager;
-    RecyclerView recyclerView;
-    ProgressBar progressBar;
-
+    @BindView(R.id.Movie_list)RecyclerView recyclerView;
+    @BindView(R.id.Load_movies) ProgressBar progressBar;
     private AppCompatActivity activity = MainActivity.this;
-
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
     private boolean isLastPage = false;
-
     private int TOTAL_PAGES = 20;
     private int currentPage = PAGE_START;
-
     private Service movieService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        recyclerView = findViewById(R.id.Movie_list);
-        progressBar = findViewById(R.id.Load_movies);
+        ButterKnife.bind(this);
 
         //adapter = new MoviesAdapter(this);
         adapter = new MoviesAdapter(this);
@@ -182,45 +179,19 @@ public class MainActivity extends AppCompatActivity {
         return movieService.getPopularMovies(
                 BuildConfig.THE_MOVIE_DB_API_TOKEN,
                 currentPage
-
         );
     }
     private Call<MoviesResponse> callTopRatedMoviesApi(){
         return movieService.getTopRatedMovies(
                 BuildConfig.THE_MOVIE_DB_API_TOKEN,
                 currentPage
-
         );
     }
-//
-//    @Override
-//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-//        Log.d(TAG, "onSharedPreferenceChanged: Shared updated");
-//        sortOder();
-//    }
-
-//    private void sortOder() {
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        String sortOrder = preferences.getString(
-//                this.getString(R.string.key),
-//                this.getString(R.string.popular)
-//                );
-//
-//        if (sortOrder.equals(this.getString(R.string.popular))){
-//            Log.d(TAG, "sortOder: Sorting by most popular");
-//            loaFirstPage();
-//        }else {
-//            Log.d(TAG, "sortOder: Sorting by top rated");
-//            loaFirstPage1();
-//        }
-//    }
 
     private void loaFirstPage1() {
         callTopRatedMoviesApi(). enqueue(new Callback<MoviesResponse>(){
-
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-
                 //got data and send them to adapter
                 List<Movie> results = fetchResults(response);
                 progressBar.setVisibility(View.GONE);
@@ -229,20 +200,10 @@ public class MainActivity extends AppCompatActivity {
                 if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
             }
-
             @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-
-            }
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {}
         });
-
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        sortOder();
-//    }
 
     private void showChangeMoviesOptions() {
         final String [] moviesOptions ={"Popular movies", "Top rated movies"};
@@ -276,16 +237,14 @@ public class MainActivity extends AppCompatActivity {
         getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
 
 //        save data to shared preferences
-        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putString("My_movie", movies );
         editor.apply();
-
     }
-//    load movies shared in preferences
 
+//    load movies shared in preferences
     public void loadMovies(){
-        SharedPreferences sharedPreferences = getSharedPreferences("Settings", MODE_PRIVATE);
-        String Movie = sharedPreferences.getString("My_movie", "");
+        String Movie = preferences.getString("My_movie", "");
         if (Movie.equals("P")){
             loaFirstPage();
         }
