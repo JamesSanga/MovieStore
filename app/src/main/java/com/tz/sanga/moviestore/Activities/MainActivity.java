@@ -28,16 +28,18 @@ import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     MoviesAdapter adapter;
     LinearLayoutManager layoutManager;
-    RecyclerView recyclerView;
-    ProgressBar progressBar;
+    @BindView(R.id.Movie_list)RecyclerView recyclerView;
+    @BindView(R.id.Load_movies)ProgressBar progressBar;
 
     private AppCompatActivity activity = MainActivity.this;
 
@@ -54,9 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        recyclerView = findViewById(R.id.Movie_list);
-        progressBar = findViewById(R.id.Load_movies);
+        ButterKnife.bind(this);
 
         //adapter = new MoviesAdapter(this);
         adapter = new MoviesAdapter(this);
@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
         getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
 
 //        save data to shared preferences
-        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putString("My_movie", movies );
         editor.apply();
 
@@ -257,8 +257,7 @@ public class MainActivity extends AppCompatActivity {
 //    load movies shared in preferences
 
     public void loadMovies(){
-        SharedPreferences sharedPreferences = getSharedPreferences("Settings", MODE_PRIVATE);
-        String Movie = sharedPreferences.getString("My_movie", "");
+        String Movie = preferences.getString("My_movie", "");
         if (Movie.equals("P")){
             loaFirstPage();
         }

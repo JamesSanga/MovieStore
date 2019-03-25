@@ -30,16 +30,19 @@ import com.tz.sanga.moviestore.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
-    TextView textViewTitle, textViewOverView;
-    MultiSnapRecyclerView multiSnapRecyclerView;
-    ImageView imageView;
-    ListView listView;
+    @BindView(R.id.move_title_name)TextView textViewTitle;
+    @BindView(R.id.details)TextView textViewOverView;
+    @BindView(R.id.relatedMovies)MultiSnapRecyclerView multiSnapRecyclerView;
+    @BindView(R.id.poster_image)ImageView imageView;
+    @BindView(R.id.listData)ListView listView;
     private FavoriteDb favoriteDb, getDb;
     String originalTitle, averageVote, overView, thumbnail;
     RelatedAdapter adapter;
@@ -61,12 +64,7 @@ public class ScrollingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         originalTitle = getIntent().getExtras().getString("original_title");
         getSupportActionBar().setTitle(originalTitle);
-
-        textViewTitle = findViewById(R.id.move_title_name);
-        textViewOverView = findViewById(R.id.details);
-        imageView = findViewById(R.id.poster_image);
-        multiSnapRecyclerView = findViewById(R.id.relatedMovies);
-        listView = findViewById(R.id.listData);
+        ButterKnife.bind(this);
 
         originalTitle = getIntent().getExtras().getString("original_title");
         averageVote = getIntent().getExtras().getString("average_vote");

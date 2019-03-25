@@ -23,6 +23,9 @@ import com.tz.sanga.moviestore.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int ITEM = 0;
@@ -112,8 +115,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 //do nothing
                 break;
         }
-
-
     }
 
     @Override
@@ -175,21 +176,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     protected class MovieVH extends RecyclerView.ViewHolder{
-        private ImageView imageView;
-        private ProgressBar progressBar;
-        public TextView textViewTitle;
-        private TextView textViewDate;
-        private TextView textViewVoteAverage;
-
+        @BindView(R.id.movie_poster)ImageView imageView;
+        @BindView(R.id.movie_progress)ProgressBar progressBar;
+        @BindView(R.id.movie_title)TextView textViewTitle;
+        @BindView(R.id.release_date)TextView textViewDate;
+        @BindView(R.id.vote_average)TextView textViewVoteAverage;
 
         public MovieVH(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.movie_poster);
-            progressBar = itemView.findViewById(R.id.movie_progress);
-            textViewTitle = itemView.findViewById(R.id.movie_title);
-            textViewDate = itemView.findViewById(R.id.release_date);
-            textViewVoteAverage = itemView.findViewById(R.id.vote_average);
-
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
