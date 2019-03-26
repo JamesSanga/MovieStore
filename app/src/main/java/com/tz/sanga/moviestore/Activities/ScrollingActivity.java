@@ -43,7 +43,7 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.relatedMovies)MultiSnapRecyclerView multiSnapRecyclerView;
     @BindView(R.id.poster_image)ImageView imageView;
     @BindView(R.id.listData)ListView listView;
-    private FavoriteDb favoriteDb, getDb;
+    private FavoriteDb favoriteDb;
     String originalTitle, averageVote, overView, thumbnail;
     RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
@@ -89,7 +89,6 @@ public class ScrollingActivity extends AppCompatActivity {
         //init service and load data
         movieService = Connector.getConnector().create(Service.class);
         loaFirstPage();
-
     }
 
     @Override
@@ -105,18 +104,15 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private void saveMovieDetails() {
         final FloatingActionButton floatingActionButton = findViewById(R.id.fab);
-
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addToSqlDB();
             }
         });
-
     }
 
     public void addToSqlDB() {
-
         favoriteDb = new FavoriteDb(this);
         boolean insertData = favoriteDb.addFavorite(originalTitle, averageVote, overView, thumbnail);
 
@@ -128,9 +124,8 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     public void loadSqliteData(){
-
-        getDb = new FavoriteDb(this);
-        Cursor data = getDb.getMovies();
+        favoriteDb = new FavoriteDb(this);
+        Cursor data = favoriteDb.getMovies();
 
         if (data.getCount() == 0){
             TextView textView = findViewById(R.id.favorite_movies);
@@ -138,12 +133,9 @@ public class ScrollingActivity extends AppCompatActivity {
         }else {
             TextView textView = findViewById(R.id.favorite_movies);
             textView.setVisibility(View.VISIBLE);
-            while (data.moveToNext()){
-             //  list.add(data.getString(1));
-                list.add(data.getString(2));
-              //  list.add(data.getString(3));
-              //  list.add(data.getString(4));
 
+            while (data.moveToNext()){
+                list.add(data.getString(2));
                 ListAdapter listAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, list);
                 listView.setAdapter(listAdapter);
 
@@ -152,18 +144,13 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private void loaFirstPage(){
-
         callTopRatedMoviesApi().enqueue(new Callback<MoviesResponse>(){
-
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-
                 //got data and send them to adapter
                 List<Movie> results = fetchResults(response);
                 adapter.addAll(results);
-
             }
-
             @Override
             public void onFailure(Call<MoviesResponse> call, Throwable t) {
 
@@ -183,5 +170,4 @@ public class ScrollingActivity extends AppCompatActivity {
 
         );
     }
-
 }
