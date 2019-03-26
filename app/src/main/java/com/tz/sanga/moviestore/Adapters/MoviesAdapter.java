@@ -31,10 +31,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int ITEM = 0;
     private static final int LOADING = 1;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
-
     private List<Movie> movieResults;
     private Context context;
-
     private boolean isLoadingAdded = false;
 
     public MoviesAdapter(Context context) {
@@ -48,7 +46,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public void setMovies(List<Movie> movieResults){this.movieResults = movieResults; }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
@@ -87,9 +84,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         result.getReleaseDate().substring(0, 4)//year only
                                 + " | "+ result.getOriginalLanguage().toUpperCase());
                 movieVH.textViewVoteAverage.setText("Vote average" + ": "+String.valueOf(result.getVoteAverage()));
-
                 //load images by glide library
-
                 Glide .with(context).load(BASE_URL_IMG + result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
