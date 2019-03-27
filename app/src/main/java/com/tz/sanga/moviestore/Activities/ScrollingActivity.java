@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
     @BindView(R.id.poster_image) ImageView imageView;
     @BindView(R.id.listData) ListView listView;
+    @BindView(R.id.load_similar_movies) ProgressBar progressBar;
 
     private FavoriteDb favoriteDb;
     String originalTitle, averageVote, overView, thumbnail;
@@ -76,7 +78,6 @@ public class ScrollingActivity extends AppCompatActivity {
         overView = getIntent().getExtras().getString("overview");
         thumbnail = getIntent().getExtras().getString("poster_path");
         similar = getIntent().getExtras().getString("id");
-       // similar = "458723";
 
         Log.d(TAG, "onCreate: "+similar);
 
@@ -157,6 +158,7 @@ public class ScrollingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                 //got data and send them to adapter
+                progressBar.setVisibility(View.INVISIBLE);
                 List<Movie> results = fetchResults(response);
                adapter.addAll(results);
             }
