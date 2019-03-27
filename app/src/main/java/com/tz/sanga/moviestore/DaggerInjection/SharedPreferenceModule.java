@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Dagger;
+package com.tz.sanga.moviestore.DaggerInjection;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,10 +16,9 @@ public class SharedPreferenceModule {
         this.application = application;
     }
 
-    @Provides @Singleton
-    Context providesApplicationContext(){return application;}
-    @Provides @Singleton
-    SharedPreferences providesSharedPreferences(Context application)
-    {return application.getSharedPreferences("Settings", Context.MODE_PRIVATE);}
+    @Provides @Singleton Context providesApplicationContext(){return application;}
+    @Provides @Singleton SharedPreferences providesSharedPreferences(Context application)
+    {return application.getSharedPreferences("Setting", Context.MODE_PRIVATE);}
+
 
 }

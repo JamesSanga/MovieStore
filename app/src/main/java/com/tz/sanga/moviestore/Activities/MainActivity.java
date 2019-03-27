@@ -39,6 +39,8 @@ public class MainActivity extends BaseActivity{
     private static final String TAG = "MainActivity";
     MoviesAdapter adapter;
     LinearLayoutManager layoutManager;
+    final String [] moviesOptions ={"Popular movies", "Top rated movies"};
+    AlertDialog.Builder mBuilder;
     @BindView(R.id.Movie_list)RecyclerView recyclerView;
     @BindView(R.id.Load_movies) ProgressBar progressBar;
     private AppCompatActivity activity = MainActivity.this;
@@ -54,7 +56,6 @@ public class MainActivity extends BaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
         //adapter = new MoviesAdapter(this);
         adapter = new MoviesAdapter(this);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -126,19 +127,14 @@ public class MainActivity extends BaseActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             showChangeMoviesOptions();
             return true;
@@ -206,19 +202,19 @@ public class MainActivity extends BaseActivity{
     }
 
     private void showChangeMoviesOptions() {
-        final String [] moviesOptions ={"Popular movies", "Top rated movies"};
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+        int number = preferences.getInt("No", Integer.parseInt("0"));
+        mBuilder = new AlertDialog.Builder(MainActivity.this);
         mBuilder.setTitle("Choose movies type to display");
-        mBuilder.setSingleChoiceItems(moviesOptions, -1, new DialogInterface.OnClickListener() {
+        mBuilder.setSingleChoiceItems(moviesOptions, number, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
                 if (i==0){
 //                    Set popular movies
-                    setMovies("P");
+                    setMovies("P", String.valueOf(i));
                 }else if (i==1) {
                     //set Top rated movies
-                    setMovies("T");
+                    setMovies("T", String.valueOf(i));
                 }
                 dialogInterface.dismiss();
             }
@@ -229,8 +225,8 @@ public class MainActivity extends BaseActivity{
         mDialog.show();
     }
 
-    private void setMovies(String movies) {
-        Locale locale = new Locale(movies);
+    private void setMovies(String movies, String i) {
+        Locale locale = new Locale(movies, i);
         locale.setDefault(locale);
         Configuration configuration = new Configuration();
         configuration.locale = locale;
@@ -238,7 +234,8 @@ public class MainActivity extends BaseActivity{
 
 //        save data to shared preferences
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("My_movie", movies );
+        editor.putString("My_movie", movies);
+        editor.putInt("No", Integer.parseInt(i));
         editor.apply();
     }
 
@@ -250,9 +247,6 @@ public class MainActivity extends BaseActivity{
         }
         else if (Movie.equals("T")){
             loaFirstPage1();
-        }
-        else {
-            loaFirstPage();
         }
     }
 }

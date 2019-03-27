@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Dagger;
+package com.tz.sanga.moviestore.DaggerInjection;
 
 import android.app.Application;
 
@@ -9,7 +9,6 @@ public class MovieStore extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         myApplicationComponents = DaggerMovieComponents.builder()
                 .sharedPreferenceModule(new SharedPreferenceModule(this)).build();
         myApplicationComponents.inject(this);
