@@ -15,10 +15,15 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 import com.tz.sanga.moviestore.API.Connector;
 import com.tz.sanga.moviestore.API.Service;
@@ -47,6 +52,9 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.poster_image) ImageView imageView;
     @BindView(R.id.listData) ListView listView;
     @BindView(R.id.load_similar_movies) ProgressBar progressBar;
+    @BindView(R.id.load_big_view) ProgressBar progressBar1;
+    @BindView(R.id.similar_movies_title) TextView textView;
+    @BindView(R.id.similar_movies_layout) RelativeLayout relativeLayout;
 
     private FavoriteDb favoriteDb;
     String originalTitle, averageVote, overView, thumbnail;
@@ -82,7 +90,25 @@ public class ScrollingActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: "+similar);
 
         //load image to image view
-        Glide.with(this).load(BASE_URL_IMG + thumbnail).placeholder(R.drawable.loading).into(imageView);
+        Glide.with(this)
+                .load(BASE_URL_IMG + thumbnail)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        progressBar1.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        progressBar1.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // cache all original and resizable images
+                .centerCrop()
+                .crossFade()
+                .into(imageView);
         //adapter = new MoviesAdapter(this);
         adapter = new RelatedAdapter(this);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -160,6 +186,10 @@ public class ScrollingActivity extends AppCompatActivity {
                 //got data and send them to adapter
                 progressBar.setVisibility(View.INVISIBLE);
                 List<Movie> results = fetchResults(response);
+                if (results.size()<1){
+                    textView.setVisibility(View.GONE);
+                    relativeLayout.setVisibility(View.GONE);
+                }
                adapter.addAll(results);
             }
             @Override
