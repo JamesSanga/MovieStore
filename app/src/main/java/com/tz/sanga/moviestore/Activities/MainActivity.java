@@ -211,10 +211,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void showChangeMoviesOptions() {
-        int n = preferences.getInt("No", Integer.parseInt("0"));
+        int number = preferences.getInt("No", Integer.parseInt("0"));
         mBuilder = new AlertDialog.Builder(MainActivity.this);
         mBuilder.setTitle("Choose movies type to display");
-        mBuilder.setSingleChoiceItems(moviesOptions, n, new DialogInterface.OnClickListener() {
+        mBuilder.setSingleChoiceItems(moviesOptions, number, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
