@@ -191,6 +191,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         intent.putExtra("overview", movieResults.get(position).getOverview());
                         intent.putExtra("poster_path", movieResults.get(position).getPosterPath());
                         intent.putExtra("average_vote", movieResults.get(position).getVoteAverage());
+                        intent.putExtra("id", movieResults.get(position).getId());
                         context.startActivity(intent);
                     }
                 }
