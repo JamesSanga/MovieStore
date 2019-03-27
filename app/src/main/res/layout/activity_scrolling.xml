@@ -24,11 +24,23 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:toolbarId="@+id/toolbar">
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ProgressBar
+                    android:id="@+id/load_big_view"
+                    android:layout_centerInParent="true"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp" />
+
             <ImageView
                 android:id="@+id/poster_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"/>
+                android:background="@drawable/loading"
+                android:scaleType="centerCrop"/>
+
+            </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
