@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -36,6 +37,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
 public class ScrollingActivity extends AppCompatActivity {
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     @BindView(R.id.move_title_name)TextView textViewTitle;
@@ -44,7 +46,9 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.poster_image)ImageView imageView;
     @BindView(R.id.listData)ListView listView;
     private FavoriteDb favoriteDb;
+    //String MovieId;
     String originalTitle, averageVote, overView, thumbnail;
+    String similar;
     RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
     private final AppCompatActivity activity = ScrollingActivity.this;
@@ -52,6 +56,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private static final int PAGE_START = 1;
     private int currentPage = PAGE_START;
+    private static final String TAG = "TAG";
 
     ArrayList<String> list = new ArrayList<>();
 
@@ -70,6 +75,10 @@ public class ScrollingActivity extends AppCompatActivity {
         averageVote = getIntent().getExtras().getString("average_vote");
         overView = getIntent().getExtras().getString("overview");
         thumbnail = getIntent().getExtras().getString("poster_path");
+        similar = getIntent().getExtras().getString("id");
+       // similar = "458723";
+
+        Log.d(TAG, "onCreate: "+similar);
 
         //load image to image view
         Glide.with(this).load(BASE_URL_IMG + thumbnail).placeholder(R.drawable.loading).into(imageView);
@@ -88,7 +97,7 @@ public class ScrollingActivity extends AppCompatActivity {
         loadSqliteData();
         //init service and load data
         movieService = Connector.getConnector().create(Service.class);
-        loaFirstPage();
+        loadSimilarMovies();
     }
 
     @Override
@@ -143,13 +152,13 @@ public class ScrollingActivity extends AppCompatActivity {
         }
     }
 
-    private void loaFirstPage(){
-        callTopRatedMoviesApi().enqueue(new Callback<MoviesResponse>(){
+    private void loadSimilarMovies(){
+        callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>(){
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                 //got data and send them to adapter
                 List<Movie> results = fetchResults(response);
-                adapter.addAll(results);
+               adapter.addAll(results);
             }
             @Override
             public void onFailure(Call<MoviesResponse> call, Throwable t) {
@@ -159,13 +168,13 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     private List<Movie> fetchResults(Response<MoviesResponse> response){
-        MoviesResponse topRatedMovies = response.body();
-        return topRatedMovies.getResults();
+        MoviesResponse SimilarMovies = response.body();
+        return SimilarMovies.getResults();
     }
 
-    private Call<MoviesResponse> callTopRatedMoviesApi(){
-        return movieService.getTopRatedMovies(
-                BuildConfig.THE_MOVIE_DB_API_TOKEN,
+    private Call<MoviesResponse> callSimilarMoviesApi(){
+        return movieService.getSimilarMovies(
+                similar, BuildConfig.THE_MOVIE_DB_API_TOKEN,
                 currentPage
 
         );
