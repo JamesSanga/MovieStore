@@ -25,17 +25,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int ITEM = 0;
     private static final int LOADING = 1;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
-
     private List<Movie> movieResults;
     private Context context;
-
     private boolean isLoadingAdded = false;
 
     public MoviesAdapter(Context context) {
@@ -49,7 +46,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public void setMovies(List<Movie> movieResults){this.movieResults = movieResults; }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
@@ -88,9 +84,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         result.getReleaseDate().substring(0, 4)//year only
                                 + " | "+ result.getOriginalLanguage().toUpperCase());
                 movieVH.textViewVoteAverage.setText("Vote average" + ": "+String.valueOf(result.getVoteAverage()));
-
                 //load images by glide library
-
                 Glide .with(context).load(BASE_URL_IMG + result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
@@ -116,8 +110,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 //do nothing
                 break;
         }
-
-
     }
 
     @Override
@@ -179,7 +171,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     protected class MovieVH extends RecyclerView.ViewHolder{
-
         @BindView(R.id.movie_progress)ProgressBar progressBar;
         @BindView(R.id.movie_poster)ImageView imageView;
         @BindView(R.id.movie_title)TextView textViewTitle;
@@ -189,7 +180,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public MovieVH(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -201,6 +191,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         intent.putExtra("overview", movieResults.get(position).getOverview());
                         intent.putExtra("poster_path", movieResults.get(position).getPosterPath());
                         intent.putExtra("average_vote", movieResults.get(position).getVoteAverage());
+                        intent.putExtra("id", movieResults.get(position).getId());
                         context.startActivity(intent);
                     }
                 }
