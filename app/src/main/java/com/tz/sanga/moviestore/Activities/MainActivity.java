@@ -34,23 +34,21 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity{
+
     private static final String TAG = "MainActivity";
     MoviesAdapter adapter;
     LinearLayoutManager layoutManager;
-    @BindView(R.id.Movie_list)RecyclerView recyclerView;
-    @BindView(R.id.Load_movies)ProgressBar progressBar;
-
     final String [] moviesOptions ={"Popular movies", "Top rated movies"};
     AlertDialog.Builder mBuilder;
-
+    @BindView(R.id.Movie_list)RecyclerView recyclerView;
+    @BindView(R.id.Load_movies) ProgressBar progressBar;
     private AppCompatActivity activity = MainActivity.this;
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private int TOTAL_PAGES = 20;
     private int currentPage = PAGE_START;
-
     private Service movieService;
 
     @Override
@@ -177,20 +175,17 @@ public class MainActivity extends BaseActivity {
         return movieService.getPopularMovies(
                 BuildConfig.THE_MOVIE_DB_API_TOKEN,
                 currentPage
-
         );
     }
     private Call<MoviesResponse> callTopRatedMoviesApi(){
         return movieService.getTopRatedMovies(
                 BuildConfig.THE_MOVIE_DB_API_TOKEN,
                 currentPage
-
         );
     }
 
     private void loaFirstPage1() {
         callTopRatedMoviesApi(). enqueue(new Callback<MoviesResponse>(){
-
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                 //got data and send them to adapter
@@ -201,13 +196,9 @@ public class MainActivity extends BaseActivity {
                 if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
                 else isLastPage = true;
             }
-
             @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-
-            }
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {}
         });
-
     }
 
     private void showChangeMoviesOptions() {
@@ -246,11 +237,11 @@ public class MainActivity extends BaseActivity {
         editor.putString("My_movie", movies);
         editor.putInt("No", Integer.parseInt(i));
         editor.apply();
-
     }
+
 //    load movies shared in preferences
     public void loadMovies(){
-        String Movie = preferences.getString("My_movie", "P");
+        String Movie = preferences.getString("My_movie", "");
         if (Movie.equals("P")){
             loaFirstPage();
         }

@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import javax.inject.Inject;
+
 import static android.provider.BaseColumns._ID;
 
 public class FavoriteDb extends SQLiteOpenHelper {
@@ -23,16 +25,17 @@ public class FavoriteDb extends SQLiteOpenHelper {
     SQLiteOpenHelper dbHandler;
     SQLiteDatabase db;
 
-
+    @Inject
     public FavoriteDb(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    @Inject
     public void open() {
         Log.i(LOGTAG, "open: Database Opened");
         db = dbHandler.getWritableDatabase();
     }
-
+    @Inject
     public void close() {
         Log.i(LOGTAG, "close: Database closed");
         dbHandler.close();
@@ -75,47 +78,6 @@ public class FavoriteDb extends SQLiteOpenHelper {
         }else return true;
 
     }
-
-//    public List<Movie>getAllFavorite(){
-//
-//        String [] columns = {
-//                _ID,
-//                Favorite.FavoriteEntry.COLUMN_MOVIEID,
-//                Favorite.FavoriteEntry.COLUMN_TITLE,
-//                Favorite.FavoriteEntry.COLUMN_POSTER_PATH,
-//                Favorite.FavoriteEntry.COLUMN_OVERVIEW
-//        };
-//
-//        String sortOder = _ID + " ASC";
-//        List<Movie> favoriteList = new ArrayList<>();
-//        SQLiteDatabase database = this.getReadableDatabase();
-//
-//        Cursor cursor = database.query(Favorite.FavoriteEntry.TABLE_NAME,
-//                columns,
-//                null,
-//                null,
-//                null,
-//                null,
-//                sortOder
-//                );
-//
-//        if (cursor.moveToFirst()){
-//            do {
-//                Movie movie = new Movie();
-//                movie.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_MOVIEID))));
-//                movie.setOriginalTile(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_TITLE)));
-//                movie.setPosterPath(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_POSTER_PATH)));
-//                movie.setOverview(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_OVERVIEW)));
-//
-//                favoriteList.add(movie);
-//            }while (cursor.moveToNext());
-//        }
-//
-//        cursor.close();
-//        database.close();
-//
-//        return favoriteList;
-//    }
     public Cursor getMovies(){
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor data = database.rawQuery("SELECT * FROM " + TABLE_NAME, null);

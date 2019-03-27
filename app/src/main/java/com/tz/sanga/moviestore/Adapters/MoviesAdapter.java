@@ -171,8 +171,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     protected class MovieVH extends RecyclerView.ViewHolder{
-        @BindView(R.id.movie_poster)ImageView imageView;
         @BindView(R.id.movie_progress)ProgressBar progressBar;
+        @BindView(R.id.movie_poster)ImageView imageView;
         @BindView(R.id.movie_title)TextView textViewTitle;
         @BindView(R.id.release_date)TextView textViewDate;
         @BindView(R.id.vote_average)TextView textViewVoteAverage;
@@ -196,11 +196,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
                 }
             });
-
         }
-
     }
-
     protected class loadingVH extends RecyclerView.ViewHolder{
 
         public loadingVH(View itemView) {

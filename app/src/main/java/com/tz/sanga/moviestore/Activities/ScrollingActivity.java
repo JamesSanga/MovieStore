@@ -40,13 +40,13 @@ import retrofit2.Response;
 
 public class ScrollingActivity extends AppCompatActivity {
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
-    @BindView(R.id.move_title_name)TextView textViewTitle;
-    @BindView(R.id.details)TextView textViewOverView;
-    @BindView(R.id.relatedMovies)MultiSnapRecyclerView multiSnapRecyclerView;
-    @BindView(R.id.poster_image)ImageView imageView;
-    @BindView(R.id.listData)ListView listView;
+    @BindView(R.id.move_title_name) TextView textViewTitle;
+    @BindView(R.id.details) TextView textViewOverView;
+    @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
+    @BindView(R.id.poster_image) ImageView imageView;
+    @BindView(R.id.listData) ListView listView;
+
     private FavoriteDb favoriteDb;
-    //String MovieId;
     String originalTitle, averageVote, overView, thumbnail;
     String similar;
     RelatedAdapter adapter;
