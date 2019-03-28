@@ -3,6 +3,7 @@ package com.tz.sanga.moviestore.Activities;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +30,7 @@ import com.tz.sanga.moviestore.API.Connector;
 import com.tz.sanga.moviestore.API.Service;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
+import com.tz.sanga.moviestore.Database.Favorite;
 import com.tz.sanga.moviestore.Database.FavoriteDb;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
@@ -57,8 +59,8 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.similar_movies_layout) RelativeLayout relativeLayout;
 
     private FavoriteDb favoriteDb;
-    String originalTitle, averageVote, overView, thumbnail;
-    String similar;
+    private Movie favorite;
+    String originalTitle, averageVote, overView, thumbnail, similar;
     RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
     private final AppCompatActivity activity = ScrollingActivity.this;
@@ -143,20 +145,25 @@ public class ScrollingActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addToSqlDB();
+                addToSqlDB(view);
             }
         });
     }
 
-    public void addToSqlDB() {
-        favoriteDb = new FavoriteDb(this);
-        boolean insertData = favoriteDb.addFavorite(originalTitle, averageVote, overView, thumbnail);
+    public void addToSqlDB(View view) {
+        favoriteDb = new FavoriteDb(activity);
+        favorite = new Movie();
+        if (!favoriteDb.checkMovie(thumbnail)){
+            favorite.setId(Integer.valueOf(similar));
+            favorite.setTitle(originalTitle);
+            favorite.setOverview(overView);
+            favoriteDb.addFavorite(favorite);
 
-        if (insertData == true){
-            Toast.makeText(ScrollingActivity.this, "Successful", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, originalTitle + " added to favorite", Snackbar.LENGTH_LONG).show();
         }else {
-            Toast.makeText(ScrollingActivity.this, "Not successful", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, originalTitle + " exist to favorite", Snackbar.LENGTH_LONG).show();
         }
+
     }
 
     public void loadSqliteData(){
