@@ -150,20 +150,36 @@ public class ScrollingActivity extends AppCompatActivity {
         });
     }
 
-    public void addToSqlDB(View view) {
-        favoriteDb = new FavoriteDb(activity);
-        favorite = new Movie();
+    public void addToSqlDB(final View view) {
+        favoriteDb = new FavoriteDb(this);
         if (!favoriteDb.checkMovie(thumbnail)){
-            favorite.setId(Integer.valueOf(similar));
-            favorite.setTitle(originalTitle);
-            favorite.setOverview(overView);
-            favoriteDb.addFavorite(favorite);
-
-            Snackbar.make(view, originalTitle + " added to favorite", Snackbar.LENGTH_LONG).show();
+            boolean insertData = favoriteDb.addFavorite(Integer.parseInt(similar), originalTitle, overView, thumbnail);
+            if (insertData == true){
+              Snackbar.make(view, originalTitle + " added to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                     deleteFavorite(v);
+                  }
+              }).show();
+            }else {
+                Snackbar.make(view, originalTitle + " not added to favorite", Snackbar.LENGTH_LONG).show();
+            }
         }else {
-            Snackbar.make(view, originalTitle + " exist to favorite", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(view, originalTitle + " exist to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteFavorite(v);
+                }
+            }).show();
         }
+    }
 
+    public void deleteFavorite(View view){
+       // boolean delete = favoriteDb.deleteMovie(Integer.parseInt(similar));
+        boolean delete = favoriteDb.deleteMovie(2);
+        if (delete == true){
+            Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();
+        } Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();
     }
 
     public void loadSqliteData(){
