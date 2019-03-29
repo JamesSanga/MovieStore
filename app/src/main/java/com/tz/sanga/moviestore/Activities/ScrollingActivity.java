@@ -28,10 +28,12 @@ import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 import com.tz.sanga.moviestore.API.Connector;
 import com.tz.sanga.moviestore.API.Service;
+import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Database.Favorite;
 import com.tz.sanga.moviestore.Database.FavoriteDb;
+import com.tz.sanga.moviestore.Database.MovieObjects;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
@@ -65,6 +67,7 @@ public class ScrollingActivity extends AppCompatActivity {
     LinearLayoutManager layoutManager;
     private final AppCompatActivity activity = ScrollingActivity.this;
     private Service movieService;
+    FavoriteAdapter favoriteAdapter;
 
     private static final int PAGE_START = 1;
     private int currentPage = PAGE_START;
@@ -88,6 +91,7 @@ public class ScrollingActivity extends AppCompatActivity {
         overView = getIntent().getExtras().getString("overview");
         thumbnail = getIntent().getExtras().getString("poster_path");
         similar = getIntent().getExtras().getString("id");
+        favoriteAdapter = new FavoriteAdapter(getApplicationContext(),R.layout.display_view);
 
         Log.d(TAG, "onCreate: "+similar);
 
@@ -193,12 +197,16 @@ public class ScrollingActivity extends AppCompatActivity {
             TextView textView = findViewById(R.id.favorite_movies);
             textView.setVisibility(View.VISIBLE);
 
-            while (data.moveToNext()){
-                list.add(data.getString(2));
-                ListAdapter listAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, list);
-                listView.setAdapter(listAdapter);
+            do {
+                String title,overview, path;
+                title= data.getString(2);
+                path=data.getString(3);
+                overview=data.getString(4);
+                MovieObjects movieObjects = new MovieObjects(title, overview,path);
+                favoriteAdapter.add(movieObjects);
 
             }
+            while (data.moveToNext());
         }
     }
 
