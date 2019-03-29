@@ -17,8 +17,8 @@ import javax.inject.Inject;
 import static android.provider.BaseColumns._ID;
 
 public class FavoriteDb extends SQLiteOpenHelper {
-    SQLiteOpenHelper dbHandler;
-    SQLiteDatabase db;
+    private SQLiteOpenHelper dbHandler;
+    private SQLiteDatabase db;
 
     @Inject
     public FavoriteDb(Context context) {
@@ -56,44 +56,35 @@ public class FavoriteDb extends SQLiteOpenHelper {
 
     }
 
-    public boolean addFavorite(Movie movie) {
+    public boolean addFavorite(int id, String title, String overview, String path ) {
         SQLiteDatabase database = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Favorite.FavoriteEntry.COLUMN_MOVIE_ID, movie.getId());
-        values.put(Favorite.FavoriteEntry.COLUMN_TITLE, movie.getTitle());
-        values.put(Favorite.FavoriteEntry.COLUMN_OVERVIEW, movie.getOverview());
-        values.put(Favorite.FavoriteEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+        values.put(Favorite.FavoriteEntry.COLUMN_MOVIE_ID, id);
+        values.put(Favorite.FavoriteEntry.COLUMN_TITLE, title);
+        values.put(Favorite.FavoriteEntry.COLUMN_OVERVIEW, overview);
+        values.put(Favorite.FavoriteEntry.COLUMN_POSTER_PATH, path);
 
         long result = database.insert(Favorite.FavoriteEntry.TABLE_NAME, null, values);
         database.close();
-
-        if (result == -1){
+        if (result==-1){
             return false;
-        }else return true;
-
+        }return true;
     }
     public Cursor getMovies(){
         SQLiteDatabase database = this.getWritableDatabase();
-        Cursor data = database.rawQuery("SELECT * FROM " + Favorite.FavoriteEntry.TABLE_NAME, null);
+        Cursor data = database.rawQuery("SELECT _ID  FROM " + Favorite.FavoriteEntry.TABLE_NAME, null);
         return data;
     }
 
-    public void addMovie(Movie movie){
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(Favorite.FavoriteEntry.COLUMN_MOVIE_ID, movie.getId());
-        values.put(Favorite.FavoriteEntry.COLUMN_TITLE, movie.getTitle());
-        values.put(Favorite.FavoriteEntry.COLUMN_OVERVIEW, movie.getOverview());
-        values.put(Favorite.FavoriteEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
 
-        database.insert(Favorite.FavoriteEntry.TABLE_NAME, null, values);
-        database.close();
-    }
-
-    public void deleteMovie(int id){
+   public boolean deleteMovie(int id){
         SQLiteDatabase database = this.getWritableDatabase();
-        database.delete(Favorite.FavoriteEntry.TABLE_NAME, Favorite.FavoriteEntry.COLUMN_MOVIE_ID + "=" + id, null);
+       long result = database.delete(Favorite.FavoriteEntry.TABLE_NAME, Favorite.FavoriteEntry._ID + "=" + id, null);
+
+       if (result == -1){
+           return false;
+       }return true;
     }
 
     public boolean checkMovie(String posterPath){
