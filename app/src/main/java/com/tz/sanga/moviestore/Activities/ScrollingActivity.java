@@ -62,7 +62,6 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.similar_movies_layout) RelativeLayout relativeLayout;
 
     private FavoriteDb favoriteDb;
-    private Movie favorite;
     String originalTitle, averageVote, overView, thumbnail, similar;
     RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
@@ -188,24 +187,24 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     public void loadSqliteData(){
-        favoriteDb = new FavoriteDb(this);
-        Cursor data = favoriteDb.getMovies();
+        favoriteDb = new FavoriteDb(getApplicationContext());
+        Cursor data = favoriteDb.getMovies("select * from favorite");
 
-        if (data.getCount() == 0){
+        if (data == null){
             TextView textView = findViewById(R.id.favorite_movies);
             textView.setVisibility(View.GONE);
         }else {
             TextView textView = findViewById(R.id.favorite_movies);
             textView.setVisibility(View.VISIBLE);
+            if (data.moveToNext()) {
+                do {
+                    MovieObjects movieObjects = new MovieObjects();
+                    movieObjects.setTitle(data.getString(2));
+                    movieObjects.setPath(data.getString(4));
+                    movieList.add(movieObjects);
 
-            do {
-                MovieObjects movieObjects = new MovieObjects();
-                movieObjects.setTitle("Sanga");
-               // movieObjects.setPath(data.getString(1));
-                movieList.add(movieObjects);
-
+                }while (data.moveToNext());
             }
-            while (data.moveToNext());
         }
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
