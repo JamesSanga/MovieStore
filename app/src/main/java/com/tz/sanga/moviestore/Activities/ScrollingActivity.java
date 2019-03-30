@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -54,7 +55,7 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.details) TextView textViewOverView;
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
     @BindView(R.id.poster_image) ImageView imageView;
-    @BindView(R.id.listData) ListView listView;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.load_similar_movies) ProgressBar progressBar;
     @BindView(R.id.load_big_view) ProgressBar progressBar1;
     @BindView(R.id.similar_movies_title) TextView textView;
@@ -73,7 +74,7 @@ public class ScrollingActivity extends AppCompatActivity {
     private int currentPage = PAGE_START;
     private static final String TAG = "TAG";
 
-    ArrayList<String> list = new ArrayList<>();
+    private ArrayList<MovieObjects> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +92,6 @@ public class ScrollingActivity extends AppCompatActivity {
         overView = getIntent().getExtras().getString("overview");
         thumbnail = getIntent().getExtras().getString("poster_path");
         similar = getIntent().getExtras().getString("id");
-        favoriteAdapter = new FavoriteAdapter(getApplicationContext(),R.layout.display_view);
 
         Log.d(TAG, "onCreate: "+similar);
 
@@ -198,17 +198,21 @@ public class ScrollingActivity extends AppCompatActivity {
             textView.setVisibility(View.VISIBLE);
 
             do {
-                String title,overview, path;
-                title= data.getString(2);
-                path=data.getString(3);
-                overview=data.getString(4);
-                MovieObjects movieObjects = new MovieObjects(title, overview,path);
-                favoriteAdapter.add(movieObjects);
+                MovieObjects movieObjects = new MovieObjects();
+                movieObjects.setTitle(data.getString(0));
+                movieObjects.setTitle(data.getString(3));
+                list.add(movieObjects);
 
             }
             while (data.moveToNext());
         }
-    }
+
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        favoriteAdapter = new FavoriteAdapter(getApplicationContext(), list);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(favoriteAdapter);
+     }
 
     private void loadSimilarMovies(){
         callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>(){

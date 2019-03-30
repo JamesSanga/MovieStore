@@ -112,7 +112,7 @@ public class FavoriteDb extends SQLiteOpenHelper {
         }return false;
     }
 
-    public List<Movie>getAllMovies(){
+    public List<MovieObjects>getAllMovies(){
         String [] columns = {
                 Favorite.FavoriteEntry._ID,
                 Favorite.FavoriteEntry.COLUMN_MOVIE_ID,
@@ -122,7 +122,7 @@ public class FavoriteDb extends SQLiteOpenHelper {
         };
 
         String sortOrder = Favorite.FavoriteEntry._ID +" DESC";
-        List<Movie>favoriteList = new ArrayList<>();
+        List<MovieObjects>favoriteList = new ArrayList<>();
 
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.query(Favorite.FavoriteEntry.TABLE_NAME,
@@ -135,10 +135,9 @@ public class FavoriteDb extends SQLiteOpenHelper {
 
         if (cursor.moveToNext()){
             do {
-                Movie movie = new Movie();
-                movie.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_MOVIE_ID))));
+                MovieObjects movie = new MovieObjects();
                 movie.setTitle(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_TITLE)));
-                movie.setPosterPath(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_POSTER_PATH)));
+                movie.setPath(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_POSTER_PATH)));
                 movie.setOverview(cursor.getString(cursor.getColumnIndex(Favorite.FavoriteEntry.COLUMN_OVERVIEW)));
 
                 favoriteList.add(movie);

@@ -5,7 +5,7 @@ public class MovieObjects {
     private String path;
     private String overview;
 
-    public MovieObjects(String title, String path, String overview) {
+    public MovieObjects() {
         this.title = title;
         this.path = path;
         this.overview = overview;
