@@ -74,7 +74,8 @@ public class ScrollingActivity extends AppCompatActivity {
     private int currentPage = PAGE_START;
     private static final String TAG = "TAG";
 
-    private ArrayList<MovieObjects> list = new ArrayList<>();
+    private ArrayList<MovieObjects> movieList = new ArrayList<>();
+    private ArrayList<String> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,9 +200,9 @@ public class ScrollingActivity extends AppCompatActivity {
 
             do {
                 MovieObjects movieObjects = new MovieObjects();
-                movieObjects.setTitle(data.getString(0));
-                movieObjects.setTitle(data.getString(3));
-                list.add(movieObjects);
+                movieObjects.setTitle("Sanga");
+               // movieObjects.setPath(data.getString(1));
+                movieList.add(movieObjects);
 
             }
             while (data.moveToNext());
@@ -209,7 +210,7 @@ public class ScrollingActivity extends AppCompatActivity {
 
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        favoriteAdapter = new FavoriteAdapter(getApplicationContext(), list);
+        favoriteAdapter = new FavoriteAdapter(getApplicationContext(), movieList);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(favoriteAdapter);
      }

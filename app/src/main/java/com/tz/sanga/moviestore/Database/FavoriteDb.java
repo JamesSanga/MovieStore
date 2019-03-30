@@ -80,7 +80,7 @@ public class FavoriteDb extends SQLiteOpenHelper {
 
    public boolean deleteMovie(int id){
         SQLiteDatabase database = this.getWritableDatabase();
-       long result = database.delete(Favorite.FavoriteEntry.TABLE_NAME, Favorite.FavoriteEntry._ID + "=" + id, null);
+       long result = database.delete(Favorite.FavoriteEntry.TABLE_NAME, Favorite.FavoriteEntry.COLUMN_MOVIE_ID + "=" + id, null);
 
        if (result == -1){
            return false;
