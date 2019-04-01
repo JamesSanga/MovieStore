@@ -6,12 +6,22 @@
     CardView:cardCornerRadius="1sp"
     android:background="#FFFFFF">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:layout_centerInParent="true"
+            android:id="@+id/loading_favorite_poster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     <ImageView
         android:layout_margin="3dp"
         android:background="@drawable/loading"
         android:id="@+id/img_view"
         android:layout_width="50dp"
         android:layout_height="76dp" />
+    </RelativeLayout>
     <TextView
         android:id="@+id/view_text"
         android:layout_marginStart="55dp"
