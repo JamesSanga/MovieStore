@@ -3,9 +3,11 @@ package com.tz.sanga.moviestore.Activities;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -27,9 +29,12 @@ import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 import com.tz.sanga.moviestore.API.Connector;
 import com.tz.sanga.moviestore.API.Service;
+import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
+import com.tz.sanga.moviestore.Database.Favorite;
 import com.tz.sanga.moviestore.Database.FavoriteDb;
+import com.tz.sanga.moviestore.Database.MovieObjects;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
@@ -50,25 +55,26 @@ public class ScrollingActivity extends AppCompatActivity {
     @BindView(R.id.details) TextView textViewOverView;
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
     @BindView(R.id.poster_image) ImageView imageView;
-    @BindView(R.id.listData) ListView listView;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.load_similar_movies) ProgressBar progressBar;
     @BindView(R.id.load_big_view) ProgressBar progressBar1;
     @BindView(R.id.similar_movies_title) TextView textView;
     @BindView(R.id.similar_movies_layout) RelativeLayout relativeLayout;
 
     private FavoriteDb favoriteDb;
-    String originalTitle, averageVote, overView, thumbnail;
-    String similar;
+    String originalTitle, averageVote, overView, thumbnail, similar;
     RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
     private final AppCompatActivity activity = ScrollingActivity.this;
     private Service movieService;
+    FavoriteAdapter favoriteAdapter;
 
     private static final int PAGE_START = 1;
     private int currentPage = PAGE_START;
     private static final String TAG = "TAG";
 
-    ArrayList<String> list = new ArrayList<>();
+    private ArrayList<MovieObjects> movieList = new ArrayList<>();
+    private ArrayList<String> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,41 +149,68 @@ public class ScrollingActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addToSqlDB();
+                addToSqlDB(view);
             }
         });
     }
 
-    public void addToSqlDB() {
+    public void addToSqlDB(final View view) {
         favoriteDb = new FavoriteDb(this);
-        boolean insertData = favoriteDb.addFavorite(originalTitle, averageVote, overView, thumbnail);
-
-        if (insertData == true){
-            Toast.makeText(ScrollingActivity.this, "Successful", Toast.LENGTH_LONG).show();
+        if (!favoriteDb.checkMovie(thumbnail)){
+            boolean insertData = favoriteDb.addFavorite(Integer.parseInt(similar), originalTitle, overView, thumbnail);
+            if (insertData == true){
+              Snackbar.make(view, originalTitle + " added to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                     deleteFavorite(v);
+                  }
+              }).show();
+            }else {
+                Snackbar.make(view, originalTitle + " not added to favorite", Snackbar.LENGTH_LONG).show();
+            }
         }else {
-            Toast.makeText(ScrollingActivity.this, "Not successful", Toast.LENGTH_LONG).show();
+            Snackbar.make(view, originalTitle + " exist to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteFavorite(v);
+                }
+            }).show();
         }
     }
 
-    public void loadSqliteData(){
-        favoriteDb = new FavoriteDb(this);
-        Cursor data = favoriteDb.getMovies();
+    public void deleteFavorite(View view){
+        boolean delete = favoriteDb.deleteMovie(thumbnail);
+        if (delete == true){Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();}
+        if (delete == false){ Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();}
+    }
 
-        if (data.getCount() == 0){
+    public void loadSqliteData(){
+        favoriteDb = new FavoriteDb(getApplicationContext());
+        Cursor data = favoriteDb.getMovies("select * from " + Favorite.FavoriteEntry.TABLE_NAME);
+
+        if (data == null){
             TextView textView = findViewById(R.id.favorite_movies);
             textView.setVisibility(View.GONE);
         }else {
             TextView textView = findViewById(R.id.favorite_movies);
             textView.setVisibility(View.VISIBLE);
+            if (data.moveToNext()) {
+                do {
+                    MovieObjects movieObjects = new MovieObjects();
+                    movieObjects.setTitle(data.getString(2));
+                    movieObjects.setPath(data.getString(4));
+                    movieList.add(movieObjects);
 
-            while (data.moveToNext()){
-                list.add(data.getString(2));
-                ListAdapter listAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, list);
-                listView.setAdapter(listAdapter);
-
+                }while (data.moveToNext());
             }
         }
-    }
+
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        favoriteAdapter = new FavoriteAdapter(getApplicationContext(), movieList);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(favoriteAdapter);
+     }
 
     private void loadSimilarMovies(){
         callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>(){
