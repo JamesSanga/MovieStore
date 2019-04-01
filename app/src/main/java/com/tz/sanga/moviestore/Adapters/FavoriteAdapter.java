@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -21,6 +22,9 @@ import com.tz.sanga.moviestore.R;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
@@ -41,7 +45,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-        MyHolder myHolder = (MyHolder)viewHolder;
+        final MyHolder myHolder = (MyHolder)viewHolder;
         myHolder.textView.setText(movieObjects.get(i).getTitle());
 
         Glide.with(context)
@@ -49,11 +53,13 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        myHolder.progressBar.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        myHolder.progressBar.setVisibility(View.GONE);
                         return false;
                     }
                 })
@@ -68,13 +74,13 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     class MyHolder extends RecyclerView.ViewHolder{
-        private TextView textView;
-        private ImageView imageView;
+        @BindView(R.id.view_text)TextView textView;
+        @BindView(R.id.img_view)ImageView imageView;
+        @BindView(R.id.loading_favorite_poster)ProgressBar progressBar;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.view_text);
-            imageView = itemView.findViewById(R.id.img_view);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
