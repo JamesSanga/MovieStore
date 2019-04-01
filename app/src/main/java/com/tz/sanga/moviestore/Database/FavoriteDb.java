@@ -79,13 +79,32 @@ public class FavoriteDb extends SQLiteOpenHelper {
     }
 
 
-   public boolean deleteMovie(int id){
-        SQLiteDatabase database = this.getWritableDatabase();
-       long result = database.delete(Favorite.FavoriteEntry.TABLE_NAME, Favorite.FavoriteEntry.COLUMN_MOVIE_ID + "=" + id, null);
+   public boolean deleteMovie(String path){
+       String movieId;
+       String [] columns = {
+               Favorite.FavoriteEntry._ID
+       };
+       SQLiteDatabase database = this.getWritableDatabase();
+       SQLiteDatabase database1 = this.getReadableDatabase();
+       String selection = Favorite.FavoriteEntry.COLUMN_POSTER_PATH+ " LIKE ?";
+       String[] selectinArgs = new String[]{path};
 
-       if (result == -1){
-           return false;
-       }return true;
+       Cursor cursor = database.query(Favorite.FavoriteEntry.TABLE_NAME,
+               columns,
+               selection,
+               selectinArgs,
+               null,
+               null,
+               null
+       );
+       if (cursor.moveToNext()){
+           movieId = cursor.getString(0);
+           Log.d(Favorite.FavoriteEntry.TAG, "deleteMovie: "+movieId);
+           database1.delete(Favorite.FavoriteEntry.TABLE_NAME, Favorite.FavoriteEntry._ID + "=" + movieId, null);
+       }
+
+       return true;
+
     }
 
     public boolean checkMovie(String posterPath){

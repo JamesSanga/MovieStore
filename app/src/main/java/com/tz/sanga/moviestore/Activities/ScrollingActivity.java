@@ -179,16 +179,14 @@ public class ScrollingActivity extends AppCompatActivity {
     }
 
     public void deleteFavorite(View view){
-       // boolean delete = favoriteDb.deleteMovie(Integer.parseInt(similar));
-        boolean delete = favoriteDb.deleteMovie(2);
-        if (delete == true){
-            Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();
-        } Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();
+        boolean delete = favoriteDb.deleteMovie(thumbnail);
+        if (delete == true){Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();}
+        if (delete == false){ Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();}
     }
 
     public void loadSqliteData(){
         favoriteDb = new FavoriteDb(getApplicationContext());
-        Cursor data = favoriteDb.getMovies("select * from favorite");
+        Cursor data = favoriteDb.getMovies("select * from " + Favorite.FavoriteEntry.TABLE_NAME);
 
         if (data == null){
             TextView textView = findViewById(R.id.favorite_movies);
