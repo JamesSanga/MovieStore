@@ -15,6 +15,6 @@ public interface Service {
     Call<MoviesResponse>getTopRatedMovies(@Query("api_key") String apiKey, @Query("page") int pageIndex);
 
     @GET("movie/{movie_id}/similar")
-    Call<MoviesResponse>getSimilarMovies(@Path("movie_id") String similar, @Query("api_key") String apiKey,
+    Call<MoviesResponse>getSimilarMovies(@Path("movie_id") int similar, @Query("api_key") String apiKey,
                                          @Query("page") int pageIndex);
 }
