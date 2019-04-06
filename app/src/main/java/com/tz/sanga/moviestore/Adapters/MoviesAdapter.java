@@ -1,9 +1,10 @@
 package com.tz.sanga.moviestore.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.tz.sanga.moviestore.Activities.ScrollingActivity;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,11 +35,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private List<Movie> movieResults;
     private Context context;
     private boolean isLoadingAdded = false;
+    private static final String TAG = "TAG";
+    private LayoutInflater inflater;
 
     public MoviesAdapter(Context context) {
         this.context = context;
         movieResults = new ArrayList<>();
-
+        inflater = LayoutInflater.from(context);
     }
 
     public List<Movie> getMovieResults() {
@@ -46,14 +49,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public void setMovies(List<Movie> movieResults){this.movieResults = movieResults; }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-
         switch (viewType){
             case ITEM:
-                viewHolder = getViewHolder(parent, inflater);
+                viewHolder = getViewHolder(parent);
                 break;
             case LOADING:
                 View view = inflater.inflate(R.layout.page_loader, parent, false);
@@ -64,7 +66,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @NonNull
-    private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater){
+    private RecyclerView.ViewHolder getViewHolder(ViewGroup parent){
         RecyclerView.ViewHolder viewHolder;
         View v1 = inflater.inflate(R.layout.movie_layout, parent, false);
         viewHolder = new MovieVH(v1);
@@ -73,19 +75,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Movie result = movieResults.get(position);
 
         switch (getItemViewType(position)){
             case ITEM:
-               // final MovieVH movieVH = (MovieVH) holder;
+                // final MovieVH movieVH = (MovieVH) holder;
                 final MovieVH movieVH = (MovieVH) holder;
-                movieVH.textViewTitle.setText(result.getTitle());
+                movieVH.movie = getItem(position);;
+                movieVH.textViewTitle.setText(movieVH.movie.getTitle());
                 movieVH.textViewDate.setText(
-                        result.getReleaseDate().substring(0, 4)//year only
-                                + " | "+ result.getOriginalLanguage().toUpperCase());
-                movieVH.textViewVoteAverage.setText("Vote average" + ": "+String.valueOf(result.getVoteAverage()));
+                        movieVH.movie.getReleaseDate().substring(0, 4)//year only
+                                + " | "+ movieVH.movie.getOriginalLanguage().toUpperCase());
+                movieVH.textViewVoteAverage.setText("Vote average" + ": "+String.valueOf(movieVH.movie.getVoteAverage()));
                 //load images by glide library
-                Glide .with(context).load(BASE_URL_IMG + result.getPosterPath())
+                Glide .with(context).load(BASE_URL_IMG + movieVH.movie.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -176,28 +178,31 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @BindView(R.id.movie_title)TextView textViewTitle;
         @BindView(R.id.release_date)TextView textViewDate;
         @BindView(R.id.vote_average)TextView textViewVoteAverage;
+        private Movie movie;
 
-        public MovieVH(View itemView) {
+        public MovieVH(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            //   itemView.setOnClickListener( Navigation.createNavigateOnClickListener(R.id.action_blankFragment_to_firstFragment));
+
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    //Do something here when item clicked
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION){
-                        Intent intent = new Intent(context, ScrollingActivity.class);
-                        intent.putExtra("original_title", movieResults.get(position).getOriginalTile());
-                        intent.putExtra("overview", movieResults.get(position).getOverview());
-                        intent.putExtra("poster_path", movieResults.get(position).getPosterPath());
-                        intent.putExtra("average_vote", movieResults.get(position).getVoteAverage());
-                        intent.putExtra("id", String.valueOf(movieResults.get(position).getId()));
-                        context.startActivity(intent);
-                    }
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: Clickable");
+                    Bundle bundle = new Bundle();
+                    bundle.putString("overview", movie.getOverview());
+                    bundle.putString("path", movie.getPosterPath());
+                    bundle.putString("title", movie.getOriginalTile());
+                    bundle.putInt("moveId", movie.getId());
+
+                    Navigation.findNavController(itemView).navigate(R.id.action_blankFragment_to_firstFragment, bundle);
                 }
             });
+
         }
     }
+
     protected class loadingVH extends RecyclerView.ViewHolder{
 
         public loadingVH(View itemView) {
