@@ -1,6 +1,7 @@
 package com.tz.sanga.moviestore.DaggerInjection;
 
 import com.tz.sanga.moviestore.Activities.BaseActivity;
+import com.tz.sanga.moviestore.Fragments.HostFragment;
 
 import javax.inject.Singleton;
 
@@ -12,4 +13,5 @@ public interface MovieComponents {
 
     void inject(BaseActivity baseActivity);
     void inject(MovieStore application);
+    void inject(HostFragment hostFragment);
 }
