@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +29,7 @@ import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 import com.tz.sanga.moviestore.API.Connector;
 import com.tz.sanga.moviestore.API.Service;
+import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
@@ -75,12 +77,13 @@ public class FirstFragment extends Fragment {
     LinearLayoutManager layoutManager;
     private Service movieService;
     FavoriteAdapter favoriteAdapter;
-    private Toolbar toolbar;
+    private ActionBar actionBar;
 
 
 
     public FirstFragment() {
         // Required empty public constructor
+        setHasOptionsMenu(true);
     }
 
 
@@ -89,16 +92,10 @@ public class FirstFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_first, container, false);
+        actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(title);
 
-        toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle(title);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().onBackPressed();
-            }
-        });
 
         ButterKnife.bind(this, view);
 
@@ -111,16 +108,18 @@ public class FirstFragment extends Fragment {
 
         return view;
     }
-    @Override
-    public void onResume() {
-        super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
-    }
+
     @Override
     public void onStop() {
         super.onStop();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
-        toolbar.setVisibility(View.GONE);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setTitle(R.string.app_name);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(title);
     }
 
     @Override
@@ -128,7 +127,6 @@ public class FirstFragment extends Fragment {
         switch(item.getItemId()) {
             case android.R.id.home:
                 getActivity().onBackPressed();
-              //  getActivity().overridePendingTransition(R.anim.to_fragment, R.anim.nav_default_exit_anim);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
