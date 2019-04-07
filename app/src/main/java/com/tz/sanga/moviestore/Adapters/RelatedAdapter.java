@@ -1,8 +1,10 @@
 package com.tz.sanga.moviestore.Adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import com.tz.sanga.moviestore.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -29,6 +32,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int ITEM = 0;
     private static final int LOADING = 1;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
+    private static final String TAG = "TAG";
 
     private List<Movie> movieResults;
     private Context context;
@@ -75,7 +79,8 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         switch (getItemViewType(position)){
             case ITEM:
                 // final MovieVH movieVH = (MovieVH) holder;
-                final RelatedAdapter.MovieVH movieVH = (RelatedAdapter.MovieVH) holder;
+                final MovieVH movieVH = (MovieVH) holder;
+                movieVH.movie = getItem(position);
                 movieVH.textViewTitle.setText(result.getTitle());
                 movieVH.textViewDate.setText(result.getReleaseDate());
                 movieVH.textViewVoteAverage.setText(String.valueOf(result.getVoteAverage()));
@@ -132,17 +137,36 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    public Movie getItem(int position){
+        return movieResults.get(position);
+    }
+
     protected class MovieVH extends RecyclerView.ViewHolder{
         @BindView(R.id.movie_poster)ImageView imageView;
         @BindView(R.id.movie_progress)ProgressBar progressBar;
         @BindView(R.id.movie_title)TextView textViewTitle;
         @BindView(R.id.release_date)TextView textViewDate;
         @BindView(R.id.vote_average)TextView textViewVoteAverage;
+        private Movie movie;
 
 
-        public MovieVH(View itemView) {
+        public MovieVH(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: Clickable");
+                    Bundle bundle = new Bundle();
+                    bundle.putString("overview", movie.getOverview());
+                    bundle.putString("path", movie.getPosterPath());
+                    bundle.putString("title", movie.getOriginalTile());
+                    bundle.putInt("moveId", movie.getId());
+
+                    Navigation.findNavController(itemView).navigate(R.id.action_firstFragment_self, bundle);
+                }
+            });
         }
 
     }
