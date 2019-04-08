@@ -95,8 +95,6 @@ public class FirstFragment extends Fragment {
         actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(title);
-
-
         ButterKnife.bind(this, view);
 
         //init service and load data
@@ -110,15 +108,8 @@ public class FirstFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setTitle(R.string.app_name);
-    }
-    @Override
     public void onResume() {
         super.onResume();
-        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(title);
     }
 
@@ -225,6 +216,7 @@ public class FirstFragment extends Fragment {
         }else {
 
             textView2.setVisibility(View.VISIBLE);
+            textView2.setText("Favorite movies");
             if (data.moveToNext()) {
                 do {
                     MovieObjects movieObjects = new MovieObjects();
@@ -254,6 +246,7 @@ public class FirstFragment extends Fragment {
                     textView1.setVisibility(View.GONE);
                     relativeLayout.setVisibility(View.GONE);
                 }
+                textView1.setText("Related/similar movies");
                 adapter.addAll(results);
             }
             @Override
