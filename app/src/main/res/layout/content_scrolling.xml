@@ -22,7 +22,6 @@
 
         <TextView
             android:id="@+id/similar_movies_title"
-            android:text="Related/similar movies"
             android:layout_marginTop="20dp"
             android:textColor="@color/black"
             android:textSize="@dimen/fab_margin"
@@ -55,7 +54,6 @@
 
         <TextView
             android:id="@+id/favorite_movies"
-            android:text="Favorite movies"
             android:layout_marginTop="20dp"
             android:textColor="@color/black"
             android:textSize="@dimen/fab_margin"
