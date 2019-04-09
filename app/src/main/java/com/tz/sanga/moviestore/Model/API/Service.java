@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.API;
+package com.tz.sanga.moviestore.Model.API;
 
 import com.tz.sanga.moviestore.Model.MoviesResponse;
 
