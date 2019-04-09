@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Database;
+package com.tz.sanga.moviestore.Model;
 
 import android.provider.BaseColumns;
 
