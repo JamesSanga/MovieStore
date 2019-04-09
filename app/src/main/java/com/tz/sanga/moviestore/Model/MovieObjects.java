@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Database;
+package com.tz.sanga.moviestore.Model;
 
 public class MovieObjects {
     private String title;
