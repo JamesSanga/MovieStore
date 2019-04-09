@@ -1,9 +1,13 @@
 package com.tz.sanga.moviestore.Fragments.Host;
 
+import com.tz.sanga.moviestore.Adapters.MoviesAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
+import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,12 +19,13 @@ public class HostPresenter {
     private int currentPage = PAGE_START;
     HostView hostView;
     private Service movieService;
+    MoviesAdapter adapter;
 
     public HostPresenter(HostView hostView) {
         this.hostView = hostView;
     }
 
-    void getData(){
+    public void getData(){
         hostView.showLoading();
         // process data here
         movieService= Connector.getConnector().create(Service.class);
@@ -28,6 +33,7 @@ public class HostPresenter {
     }
 
     private void loadMovies() {
+        //adapter = new MoviesAdapter(this);
 
         callPopularMoviesApi().enqueue(new Callback<MoviesResponse>(){
 
@@ -38,6 +44,8 @@ public class HostPresenter {
                 if (response.isSuccessful() && response.body() != null){
                     //got data and send them to adapter
                     hostView.showResults(response.body());
+//                    if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
+//                    else isLastPage = true;
 
                 }
             }
@@ -48,6 +56,11 @@ public class HostPresenter {
                 hostView.onErrorLoading(t.getLocalizedMessage());
             }
         });
+    }
+
+    private List<Movie> fetchResults(Response<MoviesResponse> response){
+        MoviesResponse topRatedMovies = response.body();
+        return topRatedMovies.getResults();
     }
 
     private Call<MoviesResponse> callPopularMoviesApi(){
