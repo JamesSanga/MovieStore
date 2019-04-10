@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.tz.sanga.moviestore.Fragments.Host.HostPresenter;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.R;
 
