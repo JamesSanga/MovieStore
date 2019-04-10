@@ -87,16 +87,16 @@ public class HostFragment extends Fragment implements HostView {
         presenter = new HostPresenter(this);
         //injection is called
         ((MovieStore)getActivity().getApplication()).getMyApplicationComponents().inject(this);
-
         loadMovies();
-        presenter.getData();
         return view;
     }
 
     private void loaFirstPage(){
         presenter.getData();
-//        if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
-//        else isLastPage = true;
+    }
+
+    private void loadTopRated(){
+        presenter.getTopRated();
     }
 
     @Override
@@ -117,15 +117,7 @@ public class HostFragment extends Fragment implements HostView {
     }
 
     private void loadNextPage(){
-        presenter.getData();
-//        if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
-//        else isLastPage = false;
-    }
-
-    private void loaFirstPage1() {
-     presenter.getData();
-//     if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
-//     else isLastPage = true;
+        //presenter.getData();
     }
 
     private void showChangeMoviesOptions() {
@@ -174,7 +166,7 @@ public class HostFragment extends Fragment implements HostView {
             loaFirstPage();
         }
         else if (Movie.equals("T")){
-            loaFirstPage1();
+            loadTopRated();
         }
     }
 
@@ -189,20 +181,19 @@ public class HostFragment extends Fragment implements HostView {
     }
 
     @Override
-    public void showResults(MoviesResponse moveData) {
+    public void showResults(List<Movie> moveData) {
         adapter = new MoviesAdapter(getContext());
+        adapter.addAll(moveData);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-
 
         recyclerView.addOnScrollListener(new MoviesScrollListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
                 currentPage += 1;
-
                 //network delay for calling api
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -229,6 +220,8 @@ public class HostFragment extends Fragment implements HostView {
         });
 
 
+        if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
+        else isLastPage = false;
 
     }
 
