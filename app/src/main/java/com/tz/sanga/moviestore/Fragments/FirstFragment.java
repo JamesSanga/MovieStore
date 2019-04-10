@@ -25,6 +25,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
+import com.tz.sanga.moviestore.Fragments.First.FavoritePresenter;
+import com.tz.sanga.moviestore.Fragments.First.FavoriteView;
 import com.tz.sanga.moviestore.Fragments.First.FirstPresenter;
 import com.tz.sanga.moviestore.Fragments.First.FirstView;
 import com.tz.sanga.moviestore.Model.API.Connector;
@@ -50,7 +52,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class FirstFragment extends Fragment implements FirstView {
+public class FirstFragment extends Fragment implements FirstView, FavoriteView {
 
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
@@ -79,6 +81,7 @@ public class FirstFragment extends Fragment implements FirstView {
     FavoriteAdapter favoriteAdapter;
     private ActionBar actionBar;
     FirstPresenter presenter;
+    FavoritePresenter favoritePresenter;
 
 
 
@@ -97,7 +100,8 @@ public class FirstFragment extends Fragment implements FirstView {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(title);
         ButterKnife.bind(this, view);
-        presenter = new FirstPresenter(this);
+        presenter = new FirstPresenter(this, moveId);
+        favoritePresenter = new FavoritePresenter(this);
 
         //init service and load data
         movieService = Connector.getConnector().create(Service.class);
@@ -138,10 +142,6 @@ public class FirstFragment extends Fragment implements FirstView {
         }else{
             Log.d(TAG, "onCreate: no data available");
         }
-    }
-
-    public int data(){
-        return moveId;
     }
 
     private void initialize(){
@@ -214,6 +214,7 @@ public class FirstFragment extends Fragment implements FirstView {
     }
 
     public void loadSqliteData(){
+       // favoritePresenter.loadSqlLiteData();
         favoriteDb = new FavoriteDb(getContext());
         Cursor data = favoriteDb.getMovies("select * from " + Favorite.FavoriteEntry.TABLE_NAME);
 
@@ -256,11 +257,21 @@ public class FirstFragment extends Fragment implements FirstView {
     }
 
     @Override
+    public void showResultsFavorite(List<MovieObjects> moveData) {
+//        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+//        recyclerView.setLayoutManager(layoutManager);
+//        favoriteAdapter = new FavoriteAdapter(getContext(), moveData);
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        recyclerView.setAdapter(favoriteAdapter);
+    }
+
+    @Override
     public void showResults(List<Movie> moveData) {
         if (moveData.size()<1){
             textView1.setVisibility(View.GONE);
             relativeLayout.setVisibility(View.GONE);
         }
+        textView1.setText("Similar/Related movies");
         adapter.addAll(moveData);
     }
 
