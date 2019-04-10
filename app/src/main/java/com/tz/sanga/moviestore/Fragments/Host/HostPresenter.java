@@ -14,7 +14,6 @@ import retrofit2.Response;
 
 
 public class HostPresenter {
-
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
     private boolean isLastPage = false;
@@ -22,23 +21,23 @@ public class HostPresenter {
     private int currentPage = PAGE_START;
     HostView hostView;
     private Service movieService;
+    int movePreference;
 
-    public HostPresenter(HostView hostView) {
+    public HostPresenter(HostView hostView, int movePreference) {
         this.hostView = hostView;
+        this.movePreference = movePreference;
     }
 
     public void getData(){
         hostView.showLoading();
         movieService= Connector.getConnector().create(Service.class);
-            callPopularMoviesApi().enqueue(new Callback<MoviesResponse>() {
+            callMoviesApi().enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                     hostView.hideLoading();
                     if (response.isSuccessful() && response.body() != null) {
-                        //got data and send them to adapter
                         List<Movie> results = fetchResults(response);
                         hostView.showResults(results);
-
                     }
                 }
 
@@ -50,45 +49,23 @@ public class HostPresenter {
             });
     }
 
-    public void getTopRated(){
-        hostView.showLoading();
-        movieService= Connector.getConnector().create(Service.class);
-        callTopRatedMoviesApi().enqueue(new Callback<MoviesResponse>() {
-            @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                hostView.hideLoading();
-                if (response.isSuccessful() && response.body() != null) {
-                    //got data and send them to adapter
-                    List<Movie> results = fetchResults(response);
-                    hostView.showResults(results);
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                hostView.hideLoading();
-                hostView.onErrorLoading(t.getLocalizedMessage());
-            }
-        });
-    }
-
     private List<Movie> fetchResults(Response<MoviesResponse> response){
         MoviesResponse movies = response.body();
         return movies.getResults();
     }
 
-    private Call<MoviesResponse> callPopularMoviesApi(){
+    private Call<MoviesResponse> callMoviesApi() {
+        if (movePreference == 0) {
             return movieService.getPopularMovies(
                     BuildConfig.THE_MOVIE_DB_API_TOKEN,
                     currentPage
             );
-    }
-
-    private Call<MoviesResponse> callTopRatedMoviesApi(){
-        return movieService.getTopRatedMovies(
-                BuildConfig.THE_MOVIE_DB_API_TOKEN,
-                currentPage
-        );
+        }
+        if (movePreference == 1) {
+            return movieService.getTopRatedMovies(
+                    BuildConfig.THE_MOVIE_DB_API_TOKEN,
+                    currentPage
+            );
+        }else return null;
     }
 }
