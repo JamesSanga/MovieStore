@@ -1,8 +1,5 @@
 package com.tz.sanga.moviestore.Fragments.Host;
 
-import android.content.SharedPreferences;
-
-import com.tz.sanga.moviestore.Adapters.MoviesAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
@@ -15,7 +12,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.content.Context.MODE_PRIVATE;
 
 public class HostPresenter {
 
@@ -26,7 +22,6 @@ public class HostPresenter {
     private int currentPage = PAGE_START;
     HostView hostView;
     private Service movieService;
-    MoviesAdapter adapter;
 
     public HostPresenter(HostView hostView) {
         this.hostView = hostView;
@@ -77,7 +72,6 @@ public class HostPresenter {
             }
         });
     }
-
 
     private List<Movie> fetchResults(Response<MoviesResponse> response){
         MoviesResponse movies = response.body();

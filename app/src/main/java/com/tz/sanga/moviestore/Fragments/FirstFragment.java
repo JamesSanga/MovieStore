@@ -25,6 +25,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
+import com.tz.sanga.moviestore.Fragments.First.FirstPresenter;
+import com.tz.sanga.moviestore.Fragments.First.FirstView;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Activities.MainActivity;
@@ -48,7 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class FirstFragment extends Fragment {
+public class FirstFragment extends Fragment implements FirstView {
 
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
@@ -76,6 +78,7 @@ public class FirstFragment extends Fragment {
     private Service movieService;
     FavoriteAdapter favoriteAdapter;
     private ActionBar actionBar;
+    FirstPresenter presenter;
 
 
 
@@ -94,6 +97,7 @@ public class FirstFragment extends Fragment {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(title);
         ButterKnife.bind(this, view);
+        presenter = new FirstPresenter(this);
 
         //init service and load data
         movieService = Connector.getConnector().create(Service.class);
@@ -134,6 +138,10 @@ public class FirstFragment extends Fragment {
         }else{
             Log.d(TAG, "onCreate: no data available");
         }
+    }
+
+    public int data(){
+        return moveId;
     }
 
     private void initialize(){
@@ -234,38 +242,63 @@ public class FirstFragment extends Fragment {
     }
 
     private void loadSimilarMovies(){
-        callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>(){
-            @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                //got data and send them to adapter
-                progressBar.setVisibility(View.INVISIBLE);
-                List<Movie> results = fetchResults(response);
-                if (results.size()<1){
-                    textView1.setVisibility(View.GONE);
-                    relativeLayout.setVisibility(View.GONE);
-                }
-                textView1.setText("Related/similar movies");
-                adapter.addAll(results);
-            }
-            @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+        presenter.getData();
 
-            }
-        });
+//        callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>(){
+//            @Override
+//            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+//                //got data and send them to adapter
+//                progressBar.setVisibility(View.INVISIBLE);
+//                List<Movie> results = fetchResults(response);
+//                if (results.size()<1){
+//                    textView1.setVisibility(View.GONE);
+//                    relativeLayout.setVisibility(View.GONE);
+//                }
+//                textView1.setText("Related/similar movies");
+//                adapter.addAll(results);
+//            }
+//            @Override
+//            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+//
+//            }
+//        });
     }
 
-    private List<Movie> fetchResults(Response<MoviesResponse> response){
-        MoviesResponse SimilarMovies = response.body();
-        return SimilarMovies.getResults();
+//    private List<Movie> fetchResults(Response<MoviesResponse> response){
+//        MoviesResponse SimilarMovies = response.body();
+//        return SimilarMovies.getResults();
+//    }
+//
+//    private Call<MoviesResponse> callSimilarMoviesApi(){
+//        return movieService.getSimilarMovies(
+//                moveId, BuildConfig.THE_MOVIE_DB_API_TOKEN,
+//                currentPage
+//
+//        );
+//    }
+
+    @Override
+    public void showLoading() {
+
     }
 
-    private Call<MoviesResponse> callSimilarMoviesApi(){
-        return movieService.getSimilarMovies(
-                moveId, BuildConfig.THE_MOVIE_DB_API_TOKEN,
-                currentPage
-
-        );
+    @Override
+    public void hideLoading() {
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
+    @Override
+    public void showResults(List<Movie> moveData) {
+        if (moveData.size()<1){
+            textView1.setVisibility(View.GONE);
+            relativeLayout.setVisibility(View.GONE);
+        }
+        adapter.addAll(moveData);
+    }
+
+    @Override
+    public void onErrorLoading(String message) {
+
+    }
 }
 

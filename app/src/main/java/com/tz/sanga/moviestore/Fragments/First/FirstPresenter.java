@@ -1,6 +1,9 @@
 package com.tz.sanga.moviestore.Fragments.First;
 
+import android.os.Bundle;
+
 import com.tz.sanga.moviestore.BuildConfig;
+import com.tz.sanga.moviestore.Fragments.FirstFragment;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Model.Movie;
@@ -16,6 +19,7 @@ public class FirstPresenter {
     private static final int PAGE_START = 1;
     private int currentPage = PAGE_START;
     FirstView firstView;
+    FirstFragment fragment;
     private Service service;
 
     public FirstPresenter(FirstView firstView) {
@@ -26,17 +30,18 @@ public class FirstPresenter {
         firstView.showLoading();
 
         service = Connector.getConnector().create(Service.class);
-//        callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>() {
-//            @Override
-//            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-//                List<Movie> results = fetchResults(response);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-//
-//            }
-//        });
+       callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>() {
+           @Override
+           public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+               List<Movie> results = fetchResults(response);
+               firstView.showResults(results);
+           }
+
+           @Override
+           public void onFailure(Call<MoviesResponse> call, Throwable t) {
+
+           }
+       });
 
 
     }
@@ -46,11 +51,12 @@ public class FirstPresenter {
         return SimilarMovies.getResults();
     }
 
-//    private Call<MoviesResponse> callSimilarMoviesApi(){
-//        return service.getSimilarMovies(
-//                moveId, BuildConfig.THE_MOVIE_DB_API_TOKEN,
-//                currentPage
-//
-//        );
-//    }
+    private Call<MoviesResponse> callSimilarMoviesApi(){
+        fragment = new FirstFragment();
+        return service.getSimilarMovies(
+                fragment.data(), BuildConfig.THE_MOVIE_DB_API_TOKEN,
+                currentPage
+
+        );
+    }
 }

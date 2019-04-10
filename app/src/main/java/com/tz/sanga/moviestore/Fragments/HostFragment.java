@@ -219,7 +219,6 @@ public class HostFragment extends Fragment implements HostView {
             }
         });
 
-
         if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
         else isLastPage = false;
 
