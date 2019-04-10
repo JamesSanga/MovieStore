@@ -69,6 +69,7 @@ public class HostFragment extends Fragment implements HostView {
     private int TOTAL_PAGES = 20;
     private int currentPage = PAGE_START;
     HostPresenter presenter;
+    int number;
 
     public HostFragment() {
         // Required empty public constructor
@@ -84,19 +85,16 @@ public class HostFragment extends Fragment implements HostView {
         ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
         toolbar.setDisplayHomeAsUpEnabled(false);
-        presenter = new HostPresenter(this);
         //injection is called
         ((MovieStore)getActivity().getApplication()).getMyApplicationComponents().inject(this);
-        loadMovies();
+        number = preferences.getInt("No", 0);
+        presenter = new HostPresenter(this, number);
+        loaFirstPage();
         return view;
     }
 
     private void loaFirstPage(){
         presenter.getData();
-    }
-
-    private void loadTopRated(){
-        presenter.getTopRated();
     }
 
     @Override
@@ -121,7 +119,7 @@ public class HostFragment extends Fragment implements HostView {
     }
 
     private void showChangeMoviesOptions() {
-        int number = preferences.getInt("No", Integer.parseInt("0"));
+        number = preferences.getInt("No", 0);
         mBuilder = new AlertDialog.Builder(getContext());
         mBuilder.setTitle("Sort movies by");
         mBuilder.setSingleChoiceItems(moviesOptions, number, new DialogInterface.OnClickListener() {
@@ -130,10 +128,10 @@ public class HostFragment extends Fragment implements HostView {
 
                 if (i==0){
 //                    Set popular movies
-                    setMovies("P", String.valueOf(i));
+                    setMovies(String.valueOf(i));
                 }else if (i==1) {
                     //set Top rated movies
-                    setMovies("T", String.valueOf(i));
+                    setMovies(String.valueOf(i));
                 }
                 dialogInterface.dismiss();
             }
@@ -144,8 +142,8 @@ public class HostFragment extends Fragment implements HostView {
         mDialog.show();
     }
 
-    private void setMovies(String movies, String i) {
-        Locale locale = new Locale(movies, i);
+    private void setMovies(String i) {
+        Locale locale = new Locale(i);
         locale.setDefault(locale);
         Configuration configuration = new Configuration();
         configuration.locale = locale;
@@ -154,20 +152,8 @@ public class HostFragment extends Fragment implements HostView {
 
 //        save data to shared preferences
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("My_movie", movies);
         editor.putInt("No", Integer.parseInt(i));
         editor.apply();
-    }
-
-    //    load movies shared in preferences
-    public void loadMovies(){
-        String Movie = preferences.getString("My_movie", "");
-        if (Movie.equals("P")){
-            loaFirstPage();
-        }
-        else if (Movie.equals("T")){
-            loadTopRated();
-        }
     }
 
     @Override
