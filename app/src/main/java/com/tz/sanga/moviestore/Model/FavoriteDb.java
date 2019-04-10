@@ -65,7 +65,7 @@ public class FavoriteDb extends SQLiteOpenHelper {
 
         long result = database.insert(Favorite.FavoriteEntry.TABLE_NAME, null, values);
         database.close();
-        if (result==-1){
+        if (result == -1){
             return false;
         }return true;
     }
