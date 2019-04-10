@@ -115,7 +115,7 @@ public class HostFragment extends Fragment implements HostView {
     }
 
     private void loadNextPage(){
-        //presenter.getData();
+        presenter.loadNext();
     }
 
     private void showChangeMoviesOptions() {
@@ -164,6 +164,7 @@ public class HostFragment extends Fragment implements HostView {
     @Override
     public void hideLoading() {
         progressBar.setVisibility(View.GONE);
+        //adapter.removeLoadingFooter();
     }
 
     @Override
@@ -208,10 +209,16 @@ public class HostFragment extends Fragment implements HostView {
         if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
         else isLastPage = false;
 
+
     }
 
     @Override
     public void onErrorLoading(String message) {
         Toast.makeText(getContext(), "Error " + message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void hideLoading(boolean b) {
+        adapter.removeLoadingFooter();
     }
 }
