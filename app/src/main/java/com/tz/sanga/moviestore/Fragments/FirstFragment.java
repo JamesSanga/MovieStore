@@ -241,41 +241,9 @@ public class FirstFragment extends Fragment implements FirstView {
         recyclerView.setAdapter(favoriteAdapter);
     }
 
-    private void loadSimilarMovies(){
+    private void loadSimilarMovies() {
         presenter.getData();
-
-//        callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>(){
-//            @Override
-//            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-//                //got data and send them to adapter
-//                progressBar.setVisibility(View.INVISIBLE);
-//                List<Movie> results = fetchResults(response);
-//                if (results.size()<1){
-//                    textView1.setVisibility(View.GONE);
-//                    relativeLayout.setVisibility(View.GONE);
-//                }
-//                textView1.setText("Related/similar movies");
-//                adapter.addAll(results);
-//            }
-//            @Override
-//            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-//
-//            }
-//        });
     }
-
-//    private List<Movie> fetchResults(Response<MoviesResponse> response){
-//        MoviesResponse SimilarMovies = response.body();
-//        return SimilarMovies.getResults();
-//    }
-//
-//    private Call<MoviesResponse> callSimilarMoviesApi(){
-//        return movieService.getSimilarMovies(
-//                moveId, BuildConfig.THE_MOVIE_DB_API_TOKEN,
-//                currentPage
-//
-//        );
-//    }
 
     @Override
     public void showLoading() {
