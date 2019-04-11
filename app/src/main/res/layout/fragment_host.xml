@@ -6,11 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.HostFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/Movie_list"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/Movie_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/Load_movies"
