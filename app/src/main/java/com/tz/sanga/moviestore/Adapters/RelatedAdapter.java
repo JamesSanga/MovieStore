@@ -32,18 +32,15 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int LOADING = 1;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     private static final String TAG = "TAG";
-
     private List<Movie> movieResults;
     private Context context;
     private ReloadListener listener;
-
     private boolean isLoadingAdded = false;
 
     public RelatedAdapter(Context context, ReloadListener listener) {
         this.context = context;
         this.listener = listener;
         movieResults = new ArrayList<>();
-
     }
 
     public List<Movie> getMovieResults() {
@@ -76,7 +73,6 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Movie result = movieResults.get(position);
-
         switch (getItemViewType(position)){
             case ITEM:
                 // final MovieVH movieVH = (MovieVH) holder;
@@ -87,7 +83,6 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 movieVH.textViewVoteAverage.setText(String.valueOf(result.getVoteAverage()));
 
                 //load images by glide library
-
                 Glide.with(context).load(BASE_URL_IMG + result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
@@ -157,7 +152,6 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "onClick: Clickable");
                     Bundle bundle = new Bundle();
                     bundle.putString("overview", movie.getOverview());
                     bundle.putString("path", movie.getPosterPath());
