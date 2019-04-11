@@ -34,6 +34,10 @@ public class FirstPresenter {
         this.moveId = moveId;
     }
 
+    public void updateMoveId(int moveId){
+        this.moveId = moveId;
+    }
+
     public void getData(){
         firstView.showLoading();
 
