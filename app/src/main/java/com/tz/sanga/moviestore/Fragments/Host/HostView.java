@@ -10,6 +10,7 @@ public interface HostView {
     void hideLoading();
     void showResults(List<Movie> moveData);
     void onErrorLoading(String message);
-
+    void onLoadingFooter(boolean page);
+    void onLoadingFirstPage(boolean firstPage);
     void hideLoading(boolean b);
 }
