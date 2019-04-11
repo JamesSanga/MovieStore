@@ -25,11 +25,11 @@ public class HostPresenter {
     private boolean isLastPage = false;
     private int TOTAL_PAGES = 20;
     private int currentPage = PAGE_START;
-    HostView hostView;
+    private HostView hostView;
     private Service movieService;
     private MoviesAdapter adapter;
     Context context;
-    int movePreference;
+    private int movePreference;
 
     public HostPresenter(HostView hostView, int movePreference) {
         this.hostView = hostView;
@@ -46,6 +46,12 @@ public class HostPresenter {
                     if (response.isSuccessful() && response.body() != null) {
                         List<Movie> results = fetchResults(response);
                         hostView.showResults(results);
+
+
+                        if (currentPage <= TOTAL_PAGES){
+                            hostView.onLoadingFirstPage(isLoading = true);
+                        }else
+                            hostView.onLoadingFirstPage(isLastPage = true);
                     }
                 }
 
@@ -63,13 +69,14 @@ public class HostPresenter {
 
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-               // adapter.removeLoadingFooter();
                 hostView.hideLoading(isLoading = false);
-                isLoading = false;
-
                 List<Movie> results = fetchResults(response);
                 hostView.showResults(results);
-                //adapter.addAll(results);
+
+                if (currentPage != TOTAL_PAGES){
+                    hostView.onLoadingFooter(isLoading = true);
+                }else
+                    hostView.onLoadingFooter(isLastPage = true);
 
             }
 
