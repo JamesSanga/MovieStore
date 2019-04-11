@@ -23,7 +23,6 @@ import com.tz.sanga.moviestore.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -36,11 +35,13 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private List<Movie> movieResults;
     private Context context;
+    private ReloadListener listener;
 
     private boolean isLoadingAdded = false;
 
-    public RelatedAdapter(Context context) {
+    public RelatedAdapter(Context context, ReloadListener listener) {
         this.context = context;
+        this.listener = listener;
         movieResults = new ArrayList<>();
 
     }
@@ -153,7 +154,6 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public MovieVH(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -163,12 +163,14 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     bundle.putString("path", movie.getPosterPath());
                     bundle.putString("title", movie.getOriginalTile());
                     bundle.putInt("moveId", movie.getId());
-
-                    Navigation.findNavController(itemView).navigate(R.id.action_firstFragment_self, bundle);
+                    listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(), movie.getOriginalTile());
                 }
             });
         }
-
     }
+
+  public interface ReloadListener {
+        void onReload(int moveId, String path, String overview, String title);
+  }
 
 }
