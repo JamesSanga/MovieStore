@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -56,6 +57,7 @@ public class HostFragment extends Fragment implements HostView {
 
     @BindView(R.id.Movie_list) RecyclerView recyclerView;
     @BindView(R.id.Load_movies) ProgressBar progressBar;
+    @BindView(R.id.refresh) SwipeRefreshLayout refreshLayout;
 
     private static final String TAG = "TAG";
     MoviesAdapter adapter;
@@ -90,6 +92,7 @@ public class HostFragment extends Fragment implements HostView {
         number = preferences.getInt("No", 0);
         presenter = new HostPresenter(this, number);
         loaFirstPage();
+        refreshPage();
         return view;
     }
 
@@ -116,6 +119,17 @@ public class HostFragment extends Fragment implements HostView {
 
     private void loadNextPage(){
         presenter.loadNext();
+    }
+
+    private void refreshPage(){
+        refreshLayout.setColorScheme(R.color.black, R.color.colorAccent, R.color.colorPrimary, R.color.lightGray);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loaFirstPage();
+                progressBar.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void showChangeMoviesOptions() {
@@ -164,6 +178,7 @@ public class HostFragment extends Fragment implements HostView {
     @Override
     public void hideLoading() {
         progressBar.setVisibility(View.GONE);
+        refreshLayout.setRefreshing(false);
         //adapter.removeLoadingFooter();
     }
 
@@ -206,15 +221,28 @@ public class HostFragment extends Fragment implements HostView {
             }
         });
 
-        if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
-        else isLastPage = false;
-
-
     }
 
     @Override
     public void onErrorLoading(String message) {
         Toast.makeText(getContext(), "Error " + message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onLoadingFooter(boolean page) {
+        if (page){
+            adapter.addLoadingFooter();
+        }if (!page)
+            isLastPage = true;
+    }
+
+    @Override
+    public void onLoadingFirstPage(boolean firstPage) {
+        if(firstPage){
+            adapter.addLoadingFooter();
+        }if (!firstPage){
+            isLastPage = true;
+        }
     }
 
     @Override
