@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,7 +53,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class FirstFragment extends Fragment implements FirstView, FavoriteView {
+public class FirstFragment extends Fragment implements FirstView, FavoriteView, RelatedAdapter.ReloadListener {
 
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
@@ -64,6 +65,7 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
     @BindView(R.id.text_view)TextView textView;
     @BindView(R.id.favorite_movies)TextView textView2;
     @BindView(R.id.poster_image) ImageView imageView;
+    @BindView(R.id.refreshDb) SwipeRefreshLayout swipeRefreshLayout;
 
     private static final String TAG = "TAG";
     private int moveId;
@@ -77,7 +79,6 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
     private FavoriteDb favoriteDb;
     RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
-    private Service movieService;
     FavoriteAdapter favoriteAdapter;
     private ActionBar actionBar;
     FirstPresenter presenter;
@@ -96,21 +97,32 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_first, container, false);
-        actionBar = ((MainActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(title);
-        ButterKnife.bind(this, view);
         presenter = new FirstPresenter(this, moveId);
         favoritePresenter = new FavoritePresenter(this);
-
-        //init service and load data
-        movieService = Connector.getConnector().create(Service.class);
+        ButterKnife.bind(this, view);
         loadSimilarMovies();
         saveMovieDetails();
         loadSqliteData();
         initialize();
-
+        setToolBar();
+        refreshData();
         return view;
+    }
+
+    private void refreshData() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadSqliteData();
+            }
+        });
+    }
+
+    private void setToolBar() {
+        actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(title);
+
     }
 
     @Override
@@ -134,17 +146,43 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments()!= null){
-            moveId = getArguments().getInt("moveId");
-            path = getArguments().getString("path");
-            overview = getArguments().getString("overview");
-            title = getArguments().getString("title");
-            Log.d(TAG, "onCreate: "+ moveId);
+            setData(getArguments().getInt("moveId"),
+                    getArguments().getString("path") ,
+                    getArguments().getString("overview"),
+                    getArguments().getString("title"));
         }else{
             Log.d(TAG, "onCreate: no data available");
         }
     }
 
+    private void setData(int moveId, String path, String overview, String title){
+        this.moveId = moveId;
+        this.path= path;
+        this.overview = overview;
+        this.title = title;
+    }
     private void initialize(){
+        setView();
+        //adapter = new MoviesAdapter(this);
+        adapter = new RelatedAdapter(getContext(),this);
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        multiSnapRecyclerView.setLayoutManager(layoutManager);
+
+        multiSnapRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        multiSnapRecyclerView.setAdapter(adapter);
+
+
+    }
+    private void saveMovieDetails() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addToSqlDB(view);
+            }
+        });
+    }
+
+    private void setView(){
         textView.setText(overview);
         Glide.with(this)
                 .load(BASE_URL_IMG + path)
@@ -163,31 +201,13 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
                 })
                 .centerCrop()
                 .into(imageView);
-
-        //adapter = new MoviesAdapter(this);
-        adapter = new RelatedAdapter(getContext());
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        multiSnapRecyclerView.setLayoutManager(layoutManager);
-
-        multiSnapRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        multiSnapRecyclerView.setAdapter(adapter);
-
-
-    }
-    private void saveMovieDetails() {
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addToSqlDB(view);
-            }
-        });
     }
 
     public void addToSqlDB(final View view) {
         favoriteDb = new FavoriteDb(getContext());
         if (!favoriteDb.checkMovie(path)){
             boolean insertData = favoriteDb.addFavorite(moveId, title, overview, path);
-            if (insertData == true){
+            if (insertData){
                 Snackbar.make(view, title + " added to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -209,8 +229,8 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
 
     public void deleteFavorite(View view){
         boolean delete = favoriteDb.deleteMovie(path);
-        if (delete == true){Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();}
-        if (delete == false){ Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();}
+        if (delete){Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();}
+        if (!delete){ Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();}
     }
 
     public void loadSqliteData(){
@@ -258,11 +278,6 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
 
     @Override
     public void showResultsFavorite(List<MovieObjects> moveData) {
-//        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-//        recyclerView.setLayoutManager(layoutManager);
-//        favoriteAdapter = new FavoriteAdapter(getContext(), moveData);
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        recyclerView.setAdapter(favoriteAdapter);
     }
 
     @Override
@@ -278,6 +293,15 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView {
     @Override
     public void onErrorLoading(String message) {
 
+    }
+
+    @Override
+    public void onReload(int moveId, String path, String overview, String title) {
+        setData(moveId,path,overview,title);
+        presenter.updateMoveId(moveId);
+        actionBar.setTitle(title);
+        loadSimilarMovies();
+        setView();
     }
 }
 
