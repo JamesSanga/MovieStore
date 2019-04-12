@@ -157,14 +157,15 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     bundle.putString("path", movie.getPosterPath());
                     bundle.putString("title", movie.getOriginalTile());
                     bundle.putInt("moveId", movie.getId());
-                    listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(), movie.getOriginalTile());
+                    bundle.putString("date", movie.getReleaseDate());
+                    listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(), movie.getOriginalTile(), movie.getReleaseDate());
                 }
             });
         }
     }
 
   public interface ReloadListener {
-        void onReload(int moveId, String path, String overview, String title);
+        void onReload(int moveId, String path, String overview, String title, String date);
   }
 
 }
