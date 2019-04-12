@@ -14,7 +14,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,14 +25,10 @@ import android.widget.Toast;
 
 import com.tz.sanga.moviestore.Fragments.Host.HostPresenter;
 import com.tz.sanga.moviestore.Fragments.Host.HostView;
-import com.tz.sanga.moviestore.Model.API.Connector;
-import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.MoviesAdapter;
-import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.DaggerInjection.MovieStore;
 import com.tz.sanga.moviestore.Model.Movie;
-import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
 import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
 
@@ -44,9 +39,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class HostFragment extends Fragment implements HostView {
@@ -58,8 +50,6 @@ public class HostFragment extends Fragment implements HostView {
     @BindView(R.id.Movie_list) RecyclerView recyclerView;
     @BindView(R.id.Load_movies) ProgressBar progressBar;
     @BindView(R.id.refresh) SwipeRefreshLayout refreshLayout;
-
-    private static final String TAG = "TAG";
     MoviesAdapter adapter;
     LinearLayoutManager layoutManager;
     final String [] moviesOptions ={"Popular movies", "Top rated movies"};
