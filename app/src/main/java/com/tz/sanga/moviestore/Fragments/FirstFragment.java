@@ -3,10 +3,9 @@ package com.tz.sanga.moviestore.Fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,9 +15,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -30,17 +30,13 @@ import com.tz.sanga.moviestore.Fragments.First.FavoritePresenter;
 import com.tz.sanga.moviestore.Fragments.First.FavoriteView;
 import com.tz.sanga.moviestore.Fragments.First.FirstPresenter;
 import com.tz.sanga.moviestore.Fragments.First.FirstView;
-import com.tz.sanga.moviestore.Model.API.Connector;
-import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
-import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.Favorite;
 import com.tz.sanga.moviestore.Model.FavoriteDb;
 import com.tz.sanga.moviestore.Model.MovieObjects;
 import com.tz.sanga.moviestore.Model.Movie;
-import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
 
 import java.util.ArrayList;
@@ -48,9 +44,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class FirstFragment extends Fragment implements FirstView, FavoriteView, RelatedAdapter.ReloadListener {
@@ -60,20 +53,18 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.load_similar_movies) ProgressBar progressBar;
     @BindView(R.id.similar_movies_title) TextView textView1;
-    @BindView(R.id.similar_movies_layout) RelativeLayout relativeLayout;
-    @BindView(R.id.fab) FloatingActionButton floatingActionButton;
-    @BindView(R.id.text_view)TextView textView;
-    @BindView(R.id.favorite_movies)TextView textView2;
+    @BindView(R.id.movie_details)TextView textOverView;
+    @BindView(R.id.add_to_favorite) Button addToFavorite;
+    @BindView(R.id.favorite_movies)TextView textFavorite;
     @BindView(R.id.poster_image) ImageView imageView;
-    @BindView(R.id.refreshDb) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.view_to_scroll) ScrollView scrollView;
+    @BindView(R.id.movie_trailer)ImageView trailerImage;
+    @BindView(R.id.movie_title) TextView textMove;
+    @BindView(R.id.movie_date)TextView textDate;
 
     private static final String TAG = "TAG";
     private int moveId;
-    private String title, path, overview;
-
-    private static final int PAGE_START = 1;
-    private int currentPage = PAGE_START;
-
+    private String title, path, overview, date;
     private ArrayList<MovieObjects> movieList = new ArrayList<>();
 
     private FavoriteDb favoriteDb;
@@ -93,7 +84,7 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_first, container, false);
@@ -105,17 +96,7 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
         loadSqliteData();
         initialize();
         setToolBar();
-        refreshData();
         return view;
-    }
-
-    private void refreshData() {
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadSqliteData();
-            }
-        });
     }
 
     private void setToolBar() {
@@ -149,17 +130,21 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
             setData(getArguments().getInt("moveId"),
                     getArguments().getString("path") ,
                     getArguments().getString("overview"),
-                    getArguments().getString("title"));
+                    getArguments().getString("title"),
+                    getArguments().getString("date"));
+
         }else{
             Log.d(TAG, "onCreate: no data available");
         }
     }
 
-    private void setData(int moveId, String path, String overview, String title){
+    private void setData(int moveId, String path, String overview, String title, String date){
         this.moveId = moveId;
         this.path= path;
         this.overview = overview;
         this.title = title;
+        this.date = date;
+        Log.d(TAG, "setData: Date " + date);
     }
     private void initialize(){
         setView();
@@ -174,7 +159,7 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
 
     }
     private void saveMovieDetails() {
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        addToFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addToSqlDB(view);
@@ -183,7 +168,9 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
     }
 
     private void setView(){
-        textView.setText(overview);
+        textDate.setText(date);
+        textMove.setText(title);
+        textOverView.setText(overview);
         Glide.with(this)
                 .load(BASE_URL_IMG + path)
                 .listener(new RequestListener<String, GlideDrawable>() {
@@ -239,11 +226,12 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
         Cursor data = favoriteDb.getMovies("select * from " + Favorite.FavoriteEntry.TABLE_NAME);
 
         if (data.getCount() < 1){
-            textView2.setVisibility(View.GONE);
+            textFavorite.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
         }else {
 
-            textView2.setVisibility(View.VISIBLE);
-            textView2.setText("Favorite movies");
+            textFavorite.setVisibility(View.VISIBLE);
+            textFavorite.setText(R.string.favorite_movies);
             if (data.moveToNext()) {
                 do {
                     MovieObjects movieObjects = new MovieObjects();
@@ -267,9 +255,7 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
     }
 
     @Override
-    public void showLoading() {
-
-    }
+    public void showLoading() {}
 
     @Override
     public void hideLoading() {
@@ -277,31 +263,29 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
     }
 
     @Override
-    public void showResultsFavorite(List<MovieObjects> moveData) {
-    }
+    public void showResultsFavorite(List<MovieObjects> moveData) {}
 
     @Override
     public void showResults(List<Movie> moveData) {
         if (moveData.size()<1){
             textView1.setVisibility(View.GONE);
-            relativeLayout.setVisibility(View.GONE);
+            multiSnapRecyclerView.setVisibility(View.GONE);
         }
-        textView1.setText("Similar/Related movies");
+        textView1.setText(R.string.related_movies);
         adapter.addAll(moveData);
     }
 
     @Override
-    public void onErrorLoading(String message) {
-
-    }
+    public void onErrorLoading(String message) {}
 
     @Override
-    public void onReload(int moveId, String path, String overview, String title) {
-        setData(moveId,path,overview,title);
+    public void onReload(int moveId, String path, String overview, String title, String date) {
+        setData(moveId,path,overview,title, date);
         presenter.updateMoveId(moveId);
         actionBar.setTitle(title);
         loadSimilarMovies();
         setView();
+        scrollView.fullScroll(View.FOCUS_BACKWARD);
     }
 }
 
