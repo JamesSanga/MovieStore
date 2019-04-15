@@ -1,6 +1,7 @@
 package com.tz.sanga.moviestore.Model.API;
 
 import com.tz.sanga.moviestore.Model.MoviesResponse;
+import com.tz.sanga.moviestore.Model.TrailerResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -17,4 +18,6 @@ public interface Service {
     @GET("movie/{movie_id}/similar")
     Call<MoviesResponse>getSimilarMovies(@Path("movie_id") int similar, @Query("api_key") String apiKey,
                                          @Query("page") int pageIndex);
+    @GET("movie/{movie_id}/videos")
+    Call<TrailerResponse>getTrailer(@Path("movie_id") int moveId, @Query("api_key") String apiKey);
 }
