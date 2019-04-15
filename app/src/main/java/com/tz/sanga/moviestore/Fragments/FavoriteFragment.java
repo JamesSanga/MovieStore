@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,12 +37,12 @@ import static android.support.constraint.Constraints.TAG;
 public class FavoriteFragment extends Fragment {
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
-   // @BindView(R.id.gride_view) GridView gridView;
+    @BindView(R.id.empty_view)TextView textView;
 
     private FavoriteDb favoriteDb;
     private ActionBar actionBar;
     private ArrayList<MovieObjects> movieList = new ArrayList<>();
-    LinearLayoutManager layoutManager;
+    GridLayoutManager layoutManager;
     FavoriteAdapter favoriteAdapter;
 
     public FavoriteFragment() {
@@ -65,7 +66,6 @@ public class FavoriteFragment extends Fragment {
         actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Favorite Movies");
-
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -79,11 +79,13 @@ public class FavoriteFragment extends Fragment {
     }
 
     public void loadSqliteData(){
-        // favoritePresenter.loadSqlLiteData();
         favoriteDb = new FavoriteDb(getContext());
         Cursor data = favoriteDb.getMovies("select * from " + Favorite.FavoriteEntry.TABLE_NAME);
-        Log.d(TAG, "loadSqliteData:sql data " +data.getCount());
 
+        if (data.getCount() < 1){
+            textView.setVisibility(View.VISIBLE);
+        }else {
+                textView.setVisibility(View.GONE);
             if (data.moveToNext()) {
                 do {
                     MovieObjects movieObjects = new MovieObjects();
@@ -93,11 +95,12 @@ public class FavoriteFragment extends Fragment {
 
                 }while (data.moveToNext());
             }
-
-           layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-           recyclerView.setLayoutManager(layoutManager);
-           favoriteAdapter = new FavoriteAdapter(getContext(), movieList);
-           recyclerView.setItemAnimator(new DefaultItemAnimator());
-       // gridView.setAdapter((ListAdapter) favoriteAdapter);
+        }
+       // layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        layoutManager = new GridLayoutManager(getContext(), 3);
+        recyclerView.setLayoutManager(layoutManager);
+        favoriteAdapter = new FavoriteAdapter(getContext(), movieList);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(favoriteAdapter);
     }
 }
