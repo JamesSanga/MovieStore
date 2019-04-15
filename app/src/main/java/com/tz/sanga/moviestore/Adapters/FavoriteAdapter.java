@@ -23,7 +23,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     private Context context;
     List<MovieObjects>movieObjects= Collections.emptyList();
