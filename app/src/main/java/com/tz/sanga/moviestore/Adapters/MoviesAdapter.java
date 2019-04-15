@@ -51,8 +51,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setMovies(List<Movie> movieResults){this.movieResults = movieResults; }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         switch (viewType){
             case ITEM:
@@ -75,7 +76,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         switch (getItemViewType(position)){
             case ITEM:
@@ -196,7 +197,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     bundle.putString("path", movie.getPosterPath());
                     bundle.putString("title", movie.getOriginalTile());
                     bundle.putInt("moveId", movie.getId());
-
+                    bundle.putString("date", movie.getReleaseDate());
                     Navigation.findNavController(itemView).navigate(R.id.action_blankFragment_to_firstFragment, bundle);
                 }
             });
