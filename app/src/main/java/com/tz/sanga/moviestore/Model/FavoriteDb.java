@@ -71,9 +71,7 @@ public class FavoriteDb extends SQLiteOpenHelper {
     }
     public Cursor getMovies(String query){
         SQLiteDatabase database = this.getWritableDatabase();
-        //Cursor data = database.rawQuery("SELECT * FROM " + Favorite.FavoriteEntry.TABLE_NAME, null);
         return database.rawQuery(query, null);
-        //return data;
     }
 
 
