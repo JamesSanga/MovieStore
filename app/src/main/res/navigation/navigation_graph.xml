@@ -16,6 +16,11 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/to_fragment" />
+        <action
+            android:id="@+id/action_blankFragment_to_favoriteFargment"
+            app:destination="@id/favoriteFargment"
+            app:enterAnim="@anim/left_to_right"
+            app:popExitAnim="@anim/to_fragment" />
     </fragment>
     <fragment
         android:id="@+id/firstFragment"
@@ -38,4 +43,9 @@
             android:name="date"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/favoriteFargment"
+        android:name="com.tz.sanga.moviestore.Fragments.FavoriteFragment"
+        android:label="fragment_favorite_fargment"
+        tools:layout="@layout/fragment_favorite" />
 </navigation>
