@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -37,6 +38,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -50,6 +52,7 @@ public class HostFragment extends Fragment implements HostView {
     @BindView(R.id.Movie_list) RecyclerView recyclerView;
     @BindView(R.id.Load_movies) ProgressBar progressBar;
     @BindView(R.id.refresh) SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.view_to_navigate) ConstraintLayout layout;
     MoviesAdapter adapter;
     LinearLayoutManager layoutManager;
     final String [] moviesOptions ={"Popular movies", "Top rated movies"};
@@ -103,9 +106,12 @@ public class HostFragment extends Fragment implements HostView {
             showChangeMoviesOptions();
             return true;
         }
-
+        if (id == R.id.goToFavorite) {
+            Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_favoriteFargment);
+        }
         return super.onOptionsItemSelected(item);
     }
+
 
     private void loadNextPage(){
         presenter.loadNext();
