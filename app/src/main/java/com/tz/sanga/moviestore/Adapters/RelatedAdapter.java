@@ -158,6 +158,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     bundle.putString("title", movie.getOriginalTile());
                     bundle.putInt("moveId", movie.getId());
                     bundle.putString("date", movie.getReleaseDate());
+                    if (movieResults.size() > 0){movieResults.clear();}
                     listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(), movie.getOriginalTile(), movie.getReleaseDate());
                 }
             });
