@@ -24,12 +24,16 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Fragments.Host.HostPresenter;
 import com.tz.sanga.moviestore.Fragments.Host.HostView;
 import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.MoviesAdapter;
 import com.tz.sanga.moviestore.DaggerInjection.MovieStore;
+import com.tz.sanga.moviestore.Model.API.Connector;
+import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Model.Movie;
+import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
 import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
 
@@ -41,6 +45,9 @@ import javax.inject.Inject;
 import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class HostFragment extends Fragment implements HostView {
@@ -64,6 +71,7 @@ public class HostFragment extends Fragment implements HostView {
     private int TOTAL_PAGES = 20;
     private int currentPage = PAGE_START;
     HostPresenter presenter;
+    private Service movieService;
     int number;
 
     public HostFragment() {
@@ -113,7 +121,24 @@ public class HostFragment extends Fragment implements HostView {
 
 
     private void loadNextPage(){
-        presenter.loadNext();
+    //   presenter.loadNext();
+        movieService= Connector.getConnector().create(Service.class);
+        Call<MoviesResponse> call = movieService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
+        call.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                adapter.removeLoadingFooter();
+                isLoading = false;
+                List<Movie> results = response.body().getResults();
+                adapter.addAll(results);
+
+                if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {}
+        });
     }
 
     private void refreshPage(){
@@ -171,7 +196,7 @@ public class HostFragment extends Fragment implements HostView {
     public void hideLoading() {
         progressBar.setVisibility(View.GONE);
         refreshLayout.setRefreshing(false);
-        //adapter.removeLoadingFooter();
+       // adapter.removeLoadingFooter();
     }
 
     @Override
@@ -221,14 +246,6 @@ public class HostFragment extends Fragment implements HostView {
     }
 
     @Override
-    public void onLoadingFooter(boolean page) {
-        if (page){
-            adapter.addLoadingFooter();
-        }if (!page)
-            isLastPage = true;
-    }
-
-    @Override
     public void onLoadingFirstPage(boolean firstPage) {
         if(firstPage){
             adapter.addLoadingFooter();
@@ -239,6 +256,8 @@ public class HostFragment extends Fragment implements HostView {
 
     @Override
     public void hideLoading(boolean b) {
-        adapter.removeLoadingFooter();
+        if (b){ adapter.removeLoadingFooter();}
+        if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
+        else isLastPage = true;
     }
 }
