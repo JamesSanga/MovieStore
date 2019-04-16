@@ -1,7 +1,6 @@
 package com.tz.sanga.moviestore.Fragments;
 
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -29,22 +27,14 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 import com.tz.sanga.moviestore.Adapters.TrailerAdapter;
-import com.tz.sanga.moviestore.BuildConfig;
-import com.tz.sanga.moviestore.Fragments.First.FavoritePresenter;
-import com.tz.sanga.moviestore.Fragments.First.FavoriteView;
 import com.tz.sanga.moviestore.Fragments.First.FirstPresenter;
 import com.tz.sanga.moviestore.Fragments.First.FirstView;
 import com.tz.sanga.moviestore.Activities.MainActivity;
-import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
-import com.tz.sanga.moviestore.Model.API.Connector;
-import com.tz.sanga.moviestore.Model.API.Service;
-import com.tz.sanga.moviestore.Model.Favorite;
 import com.tz.sanga.moviestore.Model.FavoriteDb;
 import com.tz.sanga.moviestore.Model.MovieObjects;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.Trailer;
-import com.tz.sanga.moviestore.Model.TrailerResponse;
 import com.tz.sanga.moviestore.R;
 
 import java.util.ArrayList;
@@ -52,12 +42,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
-public class FirstFragment extends Fragment implements FirstView, FavoriteView, RelatedAdapter.ReloadListener {
+public class FirstFragment extends Fragment implements FirstView, RelatedAdapter.ReloadListener {
 
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
@@ -75,17 +62,11 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
     private static final String TAG = "TAG";
     private int moveId;
     private String title, path, overview, date;
-    private List<Trailer> moveData;
-
     private FavoriteDb favoriteDb;
     private RelatedAdapter adapter;
-    private TrailerAdapter trailerAdapter;
     LinearLayoutManager layoutManager;
     private ActionBar actionBar;
     FirstPresenter presenter;
-    FavoritePresenter favoritePresenter;
-
-
 
     public FirstFragment() {
         // Required empty public constructor
@@ -99,9 +80,8 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_first, container, false);
         presenter = new FirstPresenter(this, moveId);
-        favoritePresenter = new FavoritePresenter(this);
         ButterKnife.bind(this, view);
-        loadSimilarMovies();
+        presenter.getData();
         saveMovieDetails();
         initialize();
         setToolBar();
@@ -113,7 +93,6 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
         actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.move_details);
-
     }
 
     @Override
@@ -158,7 +137,6 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
     }
     private void initialize(){
         setView();
-        //adapter = new MoviesAdapter(this);
         adapter = new RelatedAdapter(getContext(),this);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         multiSnapRecyclerView.setLayoutManager(layoutManager);
@@ -207,19 +185,13 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
             if (insertData){
                 Snackbar.make(view, title + " added to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        deleteFavorite(v);
-                    }
+                    public void onClick(View v) {deleteFavorite(v);}
                 }).show();
-            }else {
-                Snackbar.make(view, title + " not added to favorite", Snackbar.LENGTH_LONG).show();
-            }
-        }else {
-            Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
+            }else {Snackbar.make(view, title + " not added to favorite", Snackbar.LENGTH_LONG).show();}
+        }
+        else {Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    deleteFavorite(v);
-                }
+                public void onClick(View v) {deleteFavorite(v);}
             }).show();
         }
     }
@@ -230,22 +202,12 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
         if (!delete){ Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();}
     }
 
-
-    private void loadSimilarMovies() {
-        presenter.getData();
-    }
-
     @Override
-    public void showLoading() {}
+    public void showLoading() {progressBar.setVisibility(View.VISIBLE);}
 
     @Override
     public void hideLoading() {
         progressBar.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void showResultsFavorite(List<MovieObjects> moveData) {
-
     }
 
     @Override
@@ -259,47 +221,34 @@ public class FirstFragment extends Fragment implements FirstView, FavoriteView, 
     }
 
     @Override
-    public void onErrorLoading(String message) {}
-
-    @Override
     public void onReload(int moveId, String path, String overview, String title, String date) {
         setData(moveId,path,overview,title, date);
-        presenter.updateMoveId(moveId);
-        loadSimilarMovies();
-        setView();
-        presenter = new FirstPresenter(this, moveId);
         scrollView.fullScroll(View.FOCUS_BACKWARD);
-        getTrailer();
-        //scrollView.smoothScrollTo(0, 0);
+        presenter.updateMoveId(moveId);
+        presenter.getData();
+        setView();
+        presenter.processTrailer();
     }
 
     private void trailer(){
+        List<Trailer> moveData;
+        TrailerAdapter trailerAdapter;
         moveData = new ArrayList<>();
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         trailerAdapter = new TrailerAdapter(getContext(), moveData);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(trailerAdapter);
-        getTrailer();
+        presenter.processTrailer();
     }
 
-    private void getTrailer() {
-        Service service = Connector.getConnector().create(Service.class);
-        Call<TrailerResponse> call = service.getTrailer(moveId, BuildConfig.THE_MOVIE_DB_API_TOKEN);
-        call.enqueue(new Callback<TrailerResponse>() {
-            @Override
-            public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
-                List<Trailer> trailerList = response.body().getResults();
-                recyclerView.setAdapter(new TrailerAdapter(getContext(), trailerList));
-                recyclerView.smoothScrollToPosition(0);
-
-            }
-
-            @Override
-            public void onFailure(Call<TrailerResponse> call, Throwable t) {
-                Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-
-            }
-        });
+    @Override
+    public void trailerMoviesResults(List<Trailer> trailers) {
+        recyclerView.setAdapter(new TrailerAdapter(getContext(), trailers));
+        recyclerView.smoothScrollToPosition(0);
+    }
+    @Override
+    public void onErrorLoading(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 }
 
