@@ -3,8 +3,9 @@
     xmlns:CardView="http://schemas.android.com/apk/res-auto"
     android:layout_width="130dp"
     android:layout_height="wrap_content"
-    CardView:cardElevation="1dp"
-    CardView:cardCornerRadius="1sp"
+    CardView:cardElevation="2dp"
+    CardView:cardCornerRadius="2sp"
+    android:layout_marginEnd="1dp"
     android:background="@color/white">
 
     <RelativeLayout
@@ -13,9 +14,10 @@
         <ImageView
             android:layout_width="85dp"
             android:layout_marginStart="20sp"
-            android:layout_below="@+id/movie_title"
-            android:scaleType="fitXY"
-            android:contentDescription="img_movie"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name"
+            android:textStyle="bold"
             android:background="@drawable/loading"
             android:layout_height="105dp"
             android:id="@+id/movie_poster"/>
@@ -36,7 +38,7 @@
             android:maxLength="15"
             android:layout_below="@+id/movie_poster"
             android:layout_alignParentEnd="true"
-            android:text="date"
+            android:visibility="gone"
             android:id="@+id/release_date"
             android:textColor="@color/black"
             android:layout_marginTop="5dp"
@@ -48,8 +50,8 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:lines="1"
+            android:visibility="gone"
             android:layout_below="@+id/movie_poster"
-            android:text="the vote average"
             android:id="@+id/vote_average"
             android:textColor="@color/black"
             android:layout_marginStart="5dp"
@@ -57,13 +59,12 @@
             />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="40sp"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textStyle="bold"
+            android:layout_below="@+id/movie_poster"
             android:textAlignment="center"
             android:id="@+id/movie_title"
-            android:text="Movie title the vote average"
             android:textColor="@color/black"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="5sp"/>
