@@ -11,7 +11,8 @@
     <string name="add_favorite">Favorite</string>
     <string name="about_move">About movie</string>
     <string name="move_details">Movie details</string>
-    <string name="empty_view">Your favorite movies will appear here</string>
+    <string name="empty_view">Once you added favorite movies will appear here</string>
+    <string name="clear_favorite">Clear Favorites</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
