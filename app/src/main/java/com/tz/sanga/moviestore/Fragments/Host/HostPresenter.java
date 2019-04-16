@@ -1,9 +1,5 @@
 package com.tz.sanga.moviestore.Fragments.Host;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.tz.sanga.moviestore.Adapters.MoviesAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
@@ -16,8 +12,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.tz.sanga.moviestore.Model.Favorite.FavoriteEntry.TAG;
-
 
 public class HostPresenter {
     private static final int PAGE_START = 1;
@@ -27,8 +21,6 @@ public class HostPresenter {
     private int currentPage = PAGE_START;
     private HostView hostView;
     private Service movieService;
-    private MoviesAdapter adapter;
-    Context context;
     private int movePreference;
 
     public HostPresenter(HostView hostView, int movePreference) {
@@ -47,7 +39,6 @@ public class HostPresenter {
                         List<Movie> results = fetchResults(response);
                         hostView.showResults(results);
 
-
                         if (currentPage <= TOTAL_PAGES){
                             hostView.onLoadingFirstPage(isLoading = true);
                         }else
@@ -64,26 +55,18 @@ public class HostPresenter {
     }
 
     public void loadNext(){
-        Log.d(TAG, "loadNextPage: " + currentPage);
-        callMoviesApi().enqueue(new Callback<MoviesResponse>(){
-
+        movieService= Connector.getConnector().create(Service.class);
+        Call<MoviesResponse> call = movieService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
+        call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                 hostView.hideLoading(isLoading = false);
-                List<Movie> results = fetchResults(response);
+                List<Movie> results = response.body().getResults();
                 hostView.showResults(results);
-
-                if (currentPage != TOTAL_PAGES){
-                    hostView.onLoadingFooter(isLoading = true);
-                }else
-                    hostView.onLoadingFooter(isLastPage = true);
-
             }
 
             @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                t.printStackTrace();
-            }
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {}
         });
     }
 
