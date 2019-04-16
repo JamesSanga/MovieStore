@@ -7,16 +7,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.tz.sanga.moviestore.Activities.MainActivity;
@@ -31,16 +26,12 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.support.constraint.Constraints.TAG;
-
 
 public class FavoriteFragment extends Fragment {
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.empty_view)TextView textView;
 
-    private FavoriteDb favoriteDb;
-    private ActionBar actionBar;
     private ArrayList<MovieObjects> movieList = new ArrayList<>();
     GridLayoutManager layoutManager;
     FavoriteAdapter favoriteAdapter;
@@ -49,7 +40,6 @@ public class FavoriteFragment extends Fragment {
         // Required empty public constructor
         setHasOptionsMenu(true);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +53,7 @@ public class FavoriteFragment extends Fragment {
     }
 
     private void setToolBar() {
+        ActionBar actionBar;
         actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Favorite Movies");
@@ -79,6 +70,7 @@ public class FavoriteFragment extends Fragment {
     }
 
     public void loadSqliteData(){
+        FavoriteDb favoriteDb;
         favoriteDb = new FavoriteDb(getContext());
         Cursor data = favoriteDb.getMovies("select * from " + Favorite.FavoriteEntry.TABLE_NAME);
 
@@ -96,7 +88,6 @@ public class FavoriteFragment extends Fragment {
                 }while (data.moveToNext());
             }
         }
-       // layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
         favoriteAdapter = new FavoriteAdapter(getContext(), movieList);
