@@ -78,10 +78,11 @@ public class HostFragment extends Fragment implements HostView {
         View view = inflater.inflate(R.layout.fragment_host, container, false);
         ButterKnife.bind(this, view);
         ((MovieStore)getActivity().getApplication()).getMyApplicationComponents().inject(this);
+        number = preferences.getInt("No", 0);
+        presenter = new HostPresenter(this, number);
         presenter.getData();
         refreshPage();
         setToolBar();
-        initialize();
         return view;
     }
 
@@ -89,10 +90,6 @@ public class HostFragment extends Fragment implements HostView {
         ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
         toolbar.setDisplayHomeAsUpEnabled(false);
-    }
-    private void initialize(){
-        number = preferences.getInt("No", 0);
-        presenter = new HostPresenter(this, number);
     }
 
     @Override
