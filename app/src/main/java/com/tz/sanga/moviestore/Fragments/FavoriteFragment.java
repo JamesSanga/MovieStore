@@ -101,7 +101,8 @@ public class FavoriteFragment extends Fragment {
         int deleted = db.delete(Favorite.FavoriteEntry.TABLE_NAME, "1", null);
         if (deleted > 0){
             Toast.makeText(getContext(), "Favorite Cleared", Toast.LENGTH_LONG).show();
-        }loadSqliteData();
+        }else{Toast.makeText(getContext(), "You don't have to clear empty list", Toast.LENGTH_LONG).show();}
+            loadSqliteData();
     }
 
     public void loadSqliteData(){
