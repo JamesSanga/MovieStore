@@ -1,6 +1,8 @@
 package com.tz.sanga.moviestore.Fragments.First;
 
 
+import android.content.Context;
+
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
@@ -27,13 +29,19 @@ public class FirstPresenter {
         this.moveId = moveId;
     }
 
+    Context context;
+
+    public FirstPresenter(Context context) {
+        this.context = context;
+    }
+
     public void updateMoveId(int moveId){
         this.moveId = moveId;
     }
 
     public void getData(){
         firstView.showLoading();
-        service = Connector.getConnector().create(Service.class);
+        service = Connector.getConnector(context).create(Service.class);
        callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>() {
            @Override
            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
@@ -60,7 +68,7 @@ public class FirstPresenter {
     }
 
     public void processTrailer(){
-        Service service = Connector.getConnector().create(Service.class);
+        Service service = Connector.getConnector(context).create(Service.class);
         Call<TrailerResponse> call = service.getTrailer(moveId, BuildConfig.THE_MOVIE_DB_API_TOKEN);
         call.enqueue(new Callback<TrailerResponse>() {
             @Override
