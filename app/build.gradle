@@ -26,14 +26,13 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.android.support:cardview-v7:28.0.0'
-    testImplementation 'junit:junit:4.12'
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     // butter knife
     implementation 'com.jakewharton:butterknife:8.8.1'
@@ -44,12 +43,15 @@ dependencies {
     //glide app module dependency/library
     implementation 'com.github.bumptech.glide:annotations:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.github.takusemba:multisnaprecyclerview:1.3.3'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //navigation components
     implementation 'android.arch.navigation:navigation-fragment:1.0.0'
     implementation 'android.arch.navigation:navigation-ui:1.0.0'
+    //notification badge
+    implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
+    implementation files('libs/YouTubeAndroidPlayerApi.jar')
+    //RXJava
+    implementation 'io.reactivex:rxjava:1.1.6'
 }
