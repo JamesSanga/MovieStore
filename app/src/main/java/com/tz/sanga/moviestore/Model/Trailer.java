@@ -3,7 +3,7 @@ package com.tz.sanga.moviestore.Model;
 import com.google.gson.annotations.SerializedName;
 
 public class Trailer {
-    @SerializedName("Key")
+    @SerializedName("key")
     private String key;
     @SerializedName("name")
     private String name;
