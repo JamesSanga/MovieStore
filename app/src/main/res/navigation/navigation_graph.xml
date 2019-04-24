@@ -42,10 +42,27 @@
         <argument
             android:name="date"
             app:argType="string" />
+        <action
+            android:id="@+id/action_firstFragment_to_youTube"
+            app:destination="@id/youTube"
+            app:enterAnim="@anim/left_to_right"
+            app:popExitAnim="@anim/to_fragment" />
     </fragment>
     <fragment
         android:id="@+id/favoriteFargment"
         android:name="com.tz.sanga.moviestore.Fragments.FavoriteFragment"
         android:label="fragment_favorite_fargment"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <argument
+            android:name="trailerName"
+            app:argType="string" />
+        <argument
+            android:name="trailerKey"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/youTube"
+        android:name="com.tz.sanga.moviestore.YouTube"
+        android:label="fragment_youtube"
+        tools:layout="@layout/fragment_youtube" />
 </navigation>
