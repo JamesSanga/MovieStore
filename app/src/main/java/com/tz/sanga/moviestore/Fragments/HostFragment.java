@@ -71,7 +71,6 @@ public class HostFragment extends Fragment implements HostView {
     private int TOTAL_PAGES = 20;
     private int currentPage = PAGE_START;
     HostPresenter presenter;
-    private Service movieService;
     int number;
 
     public HostFragment() {
@@ -122,7 +121,7 @@ public class HostFragment extends Fragment implements HostView {
 
     private void loadNextPage(){
     //   presenter.loadNext();
-        movieService= Connector.getConnector().create(Service.class);
+        Service movieService = Connector.getConnector(getContext()).create(Service.class);
         Call<MoviesResponse> call = movieService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
