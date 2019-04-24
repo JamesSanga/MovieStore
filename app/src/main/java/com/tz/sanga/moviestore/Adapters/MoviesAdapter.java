@@ -191,7 +191,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "onClick: Clickable");
                     Bundle bundle = new Bundle();
                     bundle.putString("overview", movie.getOverview());
                     bundle.putString("path", movie.getPosterPath());
