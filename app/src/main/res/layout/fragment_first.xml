@@ -81,7 +81,6 @@
             android:layout_below="@id/movie_details"
             android:layout_margin="10dp"
             android:layout_width="match_parent"
-            android:text="@string/app_name"
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
             android:layout_height="wrap_content" />
@@ -90,7 +89,7 @@
             android:layout_below="@+id/similar_movies_title"
             android:layout_margin="10dp"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="horizontal"
             app:msrv_gravity="start"
@@ -102,7 +101,7 @@
             android:id="@+id/load_similar_movies"
             android:layout_below="@+id/similar_movies_title"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
