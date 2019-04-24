@@ -1,10 +1,14 @@
 package com.tz.sanga.moviestore.Fragments.Host;
 
+import android.content.Context;
+
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
+import com.tz.sanga.moviestore.Model.NetworkChecking.HttpRequestErrors;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
+import com.tz.sanga.moviestore.Model.NetworkChecking.NoConnectivityException;
 
 import java.util.List;
 
@@ -23,6 +27,12 @@ public class HostPresenter {
     private Service movieService;
     private int movePreference;
 
+    Context context;
+
+    public HostPresenter(Context context) {
+        this.context = context;
+    }
+
     public HostPresenter(HostView hostView, int movePreference) {
         this.hostView = hostView;
         this.movePreference = movePreference;
@@ -30,7 +40,7 @@ public class HostPresenter {
 
     public void getData(){
         hostView.showLoading();
-        movieService= Connector.getConnector().create(Service.class);
+        movieService= Connector.getConnector(context).create(Service.class);
             callMoviesApi().enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
@@ -44,18 +54,25 @@ public class HostPresenter {
                         }else
                             hostView.onLoadingFirstPage(isLastPage = true);
                     }
+                    if (response.code() == 401){
+                        hostView.onErrorLoading(HttpRequestErrors.connection_required);
+                    }
                 }
 
                 @Override
                 public void onFailure(Call<MoviesResponse> call, Throwable t) {
                     hostView.hideLoading();
-                    hostView.onErrorLoading(t.getLocalizedMessage());
+                    if (t instanceof NoConnectivityException)
+                    {
+                        hostView.onErrorLoading(t.getMessage());
+                    }
                 }
             });
     }
 
+
     public void loadNext(){
-        movieService= Connector.getConnector().create(Service.class);
+        movieService= Connector.getConnector(context).create(Service.class);
         Call<MoviesResponse> call = movieService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
@@ -66,7 +83,10 @@ public class HostPresenter {
             }
 
             @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {}
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+//                if (t instanceof NoConnectivityException){
+//                }
+            }
         });
     }
 
