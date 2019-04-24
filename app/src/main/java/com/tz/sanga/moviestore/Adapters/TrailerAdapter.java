@@ -2,17 +2,15 @@ package com.tz.sanga.moviestore.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.tz.sanga.moviestore.Model.Trailer;
 import com.tz.sanga.moviestore.R;
+import com.tz.sanga.moviestore.YoutubePlayer;
 
 import java.util.List;
 
@@ -57,9 +55,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION){
-                        String videoId = moveData.get(position).getKey();
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:"+videoId));
-                        intent.putExtra("VIDEO_ID", videoId);
+                        Intent intent = new Intent(context, YoutubePlayer.class);
+                        intent.putExtra("key", moveData.get(position).getKey());
+                        intent.putExtra("name", moveData.get(position).getName());
                         context.startActivity(intent);
                     }
                 }
