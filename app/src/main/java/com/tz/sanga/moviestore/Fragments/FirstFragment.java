@@ -133,7 +133,6 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         this.overview = overview;
         this.title = title;
         this.date = date;
-        Log.d(TAG, "setData: Date " + date);
     }
     private void initialize(){
         setView();
