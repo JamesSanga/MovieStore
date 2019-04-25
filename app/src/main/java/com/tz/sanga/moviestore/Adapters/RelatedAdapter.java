@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int ITEM = 0;
     private static final int LOADING = 1;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
-    private static final String TAG = "TAG";
     private List<Movie> movieResults;
     private Context context;
     private ReloadListener listener;
