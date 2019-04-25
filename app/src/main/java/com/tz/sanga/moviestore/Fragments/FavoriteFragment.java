@@ -1,8 +1,11 @@
 package com.tz.sanga.moviestore.Fragments;
 
 
+import android.app.Dialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,9 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Model.Favorite;
@@ -32,7 +38,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class FavoriteFragment extends Fragment {
+public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataListener{
+    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
 
     @BindView(R.id.refresh_favorite_movies) SwipeRefreshLayout refreshLayout;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
@@ -41,6 +48,8 @@ public class FavoriteFragment extends Fragment {
     private ArrayList<MovieObjects> movieList = new ArrayList<>();
     GridLayoutManager layoutManager;
     FavoriteAdapter favoriteAdapter;
+
+    Dialog mDialog;
 
     public FavoriteFragment() {
         // Required empty public constructor
@@ -54,9 +63,20 @@ public class FavoriteFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         ButterKnife.bind(this, view);
         setToolBar();
+        initialize();
         loadSqliteData();
         refreshFavorite();
         return view;
+    }
+
+    private void initialize() {
+        mDialog = new Dialog(getContext());
+        favoriteAdapter = new FavoriteAdapter(getContext(), this, movieList);
+        layoutManager = new GridLayoutManager(getContext(), 3);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(favoriteAdapter);
+        refreshLayout.setRefreshing(false);
     }
 
     private void setToolBar() {
@@ -113,7 +133,6 @@ public class FavoriteFragment extends Fragment {
         if (data.getCount() < 1){
             textView.setVisibility(View.VISIBLE);
             movieList.clear();
-            favoriteAdapter = new FavoriteAdapter(getContext(), movieList);
         }else {
                 textView.setVisibility(View.GONE);
             if (data.moveToNext()) {
@@ -124,13 +143,34 @@ public class FavoriteFragment extends Fragment {
                     movieList.add(movieObjects);
 
                 }while (data.moveToNext());
+                favoriteAdapter.notifyDataSetChanged();
             }
+
         }
-        layoutManager = new GridLayoutManager(getContext(), 3);
-        recyclerView.setLayoutManager(layoutManager);
-        favoriteAdapter = new FavoriteAdapter(getContext(), movieList);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(favoriteAdapter);
-        refreshLayout.setRefreshing(false);
+
+    }
+    private void zoomFavorite(String overView, String path){
+        mDialog.setContentView(R.layout.pop_up);
+        ImageButton imageButton = mDialog.findViewById(R.id.exit_full_full_screen);
+        ImageView imageView = mDialog.findViewById(R.id.full_image);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialog.dismiss();
+            }
+        });
+        Glide.with(getContext())
+                .load(BASE_URL_IMG+path)
+                .centerCrop()
+                .into(imageView);
+        mDialog.onBackPressed();
+        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        mDialog.setTitle(overView);
+        mDialog.show();
+    }
+
+    @Override
+    public void onClickFavorite(String overView, String path) {
+        zoomFavorite(overView, path);
     }
 }
