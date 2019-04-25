@@ -20,6 +20,7 @@
         android:contentDescription="@string/app_name"
         android:background="@drawable/loading"
         android:id="@+id/img_view"
+        android:adjustViewBounds="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     </RelativeLayout>
