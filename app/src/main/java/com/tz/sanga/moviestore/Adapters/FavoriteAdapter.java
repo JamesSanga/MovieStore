@@ -3,6 +3,7 @@ package com.tz.sanga.moviestore.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,15 +24,20 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+
 public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     private Context context;
+    private static final String TAG = "TAG";
     List<MovieObjects>movieObjects= Collections.emptyList();
+    private dataListener listener;
 
-    public FavoriteAdapter(Context context, List<MovieObjects> movieObjects) {
+    public FavoriteAdapter(Context context, dataListener listener, List<MovieObjects> movieObjects) {
         this.context = context;
+        this.listener = listener;
         this.movieObjects = movieObjects;
     }
+
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -43,6 +49,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         final MyHolder myHolder = (MyHolder)viewHolder;
+        myHolder.object = movieObjects.get(i);
         myHolder.textView.setText(movieObjects.get(i).getTitle());
 
         Glide.with(context)
@@ -74,11 +81,25 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @BindView(R.id.view_text)TextView textView;
         @BindView(R.id.img_view)ImageView imageView;
         @BindView(R.id.loading_favorite_poster)ProgressBar progressBar;
+        private MovieObjects object;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: " + object.getPath());
+//                    if (listener != null)
+                        listener.onClickFavorite(object.getOverview(), object.getPath());
+                }
+            });
         }
+    }
+
+    public interface dataListener {
+        void onClickFavorite(String overView, String path);
     }
 }
 
