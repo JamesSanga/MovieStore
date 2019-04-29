@@ -62,7 +62,7 @@
     </fragment>
     <fragment
         android:id="@+id/youTube"
-        android:name="com.tz.sanga.moviestore.YouTube"
+        android:name="com.tz.sanga.moviestore.YoutubePlayer.YouTube"
         android:label="fragment_youtube"
         tools:layout="@layout/fragment_youtube" />
 </navigation>
