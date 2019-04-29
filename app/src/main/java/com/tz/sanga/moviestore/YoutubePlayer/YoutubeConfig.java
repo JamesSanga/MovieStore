@@ -1,4 +1,6 @@
-package com.tz.sanga.moviestore;
+package com.tz.sanga.moviestore.YoutubePlayer;
+
+import com.tz.sanga.moviestore.BuildConfig;
 
 public class YoutubeConfig {
     public YoutubeConfig(){

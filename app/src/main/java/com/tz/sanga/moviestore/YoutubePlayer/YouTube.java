@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore;
+package com.tz.sanga.moviestore.YoutubePlayer;
 
 
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.tz.sanga.moviestore.Activities.MainActivity;
+import com.tz.sanga.moviestore.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
