@@ -31,10 +31,12 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final String TAG = "TAG";
     List<MovieObjects>movieObjects= Collections.emptyList();
     private dataListener listener;
+    private favoriteOnLongClickListener favoriteListener;
 
-    public FavoriteAdapter(Context context, dataListener listener, List<MovieObjects> movieObjects) {
+    public FavoriteAdapter(Context context, dataListener listener, favoriteOnLongClickListener favoriteListener, List<MovieObjects> movieObjects) {
         this.context = context;
         this.listener = listener;
+        this.favoriteListener = favoriteListener;
         this.movieObjects = movieObjects;
     }
 
@@ -95,12 +97,22 @@ public class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         listener.onClickFavorite(object.getOverview(), object.getPath());
                 }
             });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    favoriteListener.onLongClickFavorite(object.getPath(), object.getTitle());
+                    return false;
+                }
+            });
         }
     }
 
     public interface dataListener {
         void onClickFavorite(String overView, String path);
     }
+   public interface favoriteOnLongClickListener{
+        void onLongClickFavorite(String path, String title);
+   }
 }
 
 
