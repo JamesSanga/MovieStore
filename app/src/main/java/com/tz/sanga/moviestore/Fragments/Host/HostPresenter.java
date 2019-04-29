@@ -62,6 +62,7 @@ public class HostPresenter {
                 @Override
                 public void onFailure(Call<MoviesResponse> call, Throwable t) {
                     hostView.hideLoading();
+                    hostView.onErrorLoading(t.getLocalizedMessage());
                     if (t instanceof NoConnectivityException)
                     {
                         hostView.onErrorLoading(t.getMessage());
