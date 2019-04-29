@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.tz.sanga.moviestore.Model.Trailer;
 import com.tz.sanga.moviestore.R;
-import com.tz.sanga.moviestore.YoutubePlayer;
+import com.tz.sanga.moviestore.YoutubePlayer.YoutubePlayer;
 
 import java.util.List;
 
