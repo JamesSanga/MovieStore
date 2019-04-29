@@ -1,12 +1,15 @@
 package com.tz.sanga.moviestore.Fragments;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -21,10 +24,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Model.Favorite;
@@ -38,7 +46,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataListener{
+public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataListener, FavoriteAdapter.favoriteOnLongClickListener{
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
 
     @BindView(R.id.refresh_favorite_movies) SwipeRefreshLayout refreshLayout;
@@ -48,8 +56,9 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     private ArrayList<MovieObjects> movieList = new ArrayList<>();
     GridLayoutManager layoutManager;
     FavoriteAdapter favoriteAdapter;
+    private FavoriteDb favoriteDb;
 
-    Dialog mDialog;
+    AlertDialog.Builder mDialog;
 
     public FavoriteFragment() {
         // Required empty public constructor
@@ -70,13 +79,12 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     }
 
     private void initialize() {
-        mDialog = new Dialog(getContext());
-        favoriteAdapter = new FavoriteAdapter(getContext(), this, movieList);
+        mDialog = new AlertDialog.Builder(getContext());
+        favoriteAdapter = new FavoriteAdapter(getContext(), this,this, movieList);
         layoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(favoriteAdapter);
-        refreshLayout.setRefreshing(false);
     }
 
     private void setToolBar() {
@@ -98,10 +106,31 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
                 getActivity().onBackPressed();
                 return true;
             case R.id.action_delete:
-                clearFavorite();
+                alertMessage();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void alertMessage() {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setMessage("Are you sure you want to clear Favorite?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                clearFavorite();
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialogBuilder.setCancelable(true);
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void refreshFavorite(){
@@ -121,18 +150,17 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
         int deleted = db.delete(Favorite.FavoriteEntry.TABLE_NAME, "1", null);
         if (deleted > 0){
             Toast.makeText(getContext(), "Favorite Cleared", Toast.LENGTH_LONG).show();
+            movieList.clear();
+            favoriteAdapter.notifyDataSetChanged();
         }else{Toast.makeText(getContext(), "You don't have to clear empty list", Toast.LENGTH_LONG).show();}
-            loadSqliteData();
     }
 
     public void loadSqliteData(){
-        FavoriteDb favoriteDb;
-        favoriteDb = new FavoriteDb(getContext());
+        FavoriteDb favoriteDb = new FavoriteDb(getContext());
         Cursor data = favoriteDb.getMovies("select * from " + Favorite.FavoriteEntry.TABLE_NAME);
-
         if (data.getCount() < 1){
             textView.setVisibility(View.VISIBLE);
-            movieList.clear();
+            favoriteAdapter.notifyDataSetChanged();
         }else {
                 textView.setVisibility(View.GONE);
             if (data.moveToNext()) {
@@ -147,30 +175,72 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
             }
 
         }
-
+        refreshLayout.setRefreshing(false);
     }
     private void zoomFavorite(String overView, String path){
-        mDialog.setContentView(R.layout.pop_up);
-        ImageButton imageButton = mDialog.findViewById(R.id.exit_full_full_screen);
-        ImageView imageView = mDialog.findViewById(R.id.full_image);
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDialog.dismiss();
-            }
-        });
+        mDialog = new AlertDialog.Builder(getContext());
+        View mView = getLayoutInflater().inflate(R.layout.pop_up, null);
+        PhotoView imageView = mView.findViewById(R.id.imageView);
+        final ProgressBar progressBar = mView.findViewById(R.id.full_image_loading);
         Glide.with(getContext())
                 .load(BASE_URL_IMG+path)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
                 .centerCrop()
                 .into(imageView);
-        mDialog.onBackPressed();
-        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-        mDialog.setTitle(overView);
+        mDialog.setView(mView);
+        mDialog.create();
         mDialog.show();
     }
 
     @Override
     public void onClickFavorite(String overView, String path) {
         zoomFavorite(overView, path);
+    }
+
+    @Override
+    public void onLongClickFavorite(String path, String title) {
+        warnUser(path, title);
+    }
+
+    private void warnUser(final String path, final String title){
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setMessage(title + " will be deleted");
+        alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteMovie(path, title);
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialogBuilder.setCancelable(true);
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+    private void deleteMovie(String path, String title){
+        favoriteDb = new FavoriteDb(getContext());
+        boolean delete = favoriteDb.deleteMovie(path);
+        if (delete){
+            movieList.clear();
+            loadSqliteData();
+            Toast.makeText(getContext(),title + " Deleted successful", Snackbar.LENGTH_LONG).show();}
+        if (!delete){ Toast.makeText(getContext(), "Not successful", Snackbar.LENGTH_LONG).show();}
     }
 }
