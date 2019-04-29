@@ -18,6 +18,7 @@ android {
     }
     buildTypes.each {
         it.buildConfigField 'String', 'THE_MOVIE_DB_API_TOKEN', myTheMovieDBApiToken
+        it.buildConfigField 'String', 'THE_YOUTUBE_API_TOKEN', myYoutubeApiToken
     }
 }
 
