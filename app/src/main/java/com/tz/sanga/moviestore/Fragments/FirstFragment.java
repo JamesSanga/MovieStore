@@ -27,6 +27,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 import com.tz.sanga.moviestore.Adapters.TrailerAdapter;
+import com.tz.sanga.moviestore.Constants;
 import com.tz.sanga.moviestore.Fragments.First.FirstPresenter;
 import com.tz.sanga.moviestore.Fragments.First.FirstView;
 import com.tz.sanga.moviestore.Activities.MainActivity;
@@ -45,8 +46,6 @@ import butterknife.ButterKnife;
 
 
 public class FirstFragment extends Fragment implements FirstView, RelatedAdapter.ReloadListener {
-
-    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
     @BindView(R.id.load_similar_movies) ProgressBar progressBar;
     @BindView(R.id.similar_movies_title) TextView textView1;
@@ -159,7 +158,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         textMove.setText(title);
         textOverView.setText(overview);
         Glide.with(this)
-                .load(BASE_URL_IMG + path)
+                .load(Constants.getImageUrl() + path)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
