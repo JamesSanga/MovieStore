@@ -16,6 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.tz.sanga.moviestore.Constants;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.R;
 
@@ -29,7 +30,6 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private static final int ITEM = 0;
     private static final int LOADING = 1;
-    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     private List<Movie> movieResults;
     private Context context;
     private ReloadListener listener;
@@ -48,14 +48,13 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setMovies(List<Movie> movieResults){this.movieResults = movieResults; }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder = null;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        switch (viewType){
-            case ITEM:
-                viewHolder = getViewHolder(parent, inflater);
-                break;
+        if (viewType == ITEM){
+            viewHolder = getViewHolder(parent, inflater);
         }
         return viewHolder;
     }
@@ -69,7 +68,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Movie result = movieResults.get(position);
         switch (getItemViewType(position)){
             case ITEM:
@@ -81,7 +80,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 movieVH.textViewVoteAverage.setText(String.valueOf(result.getVoteAverage()));
 
                 //load images by glide library
-                Glide.with(context).load(BASE_URL_IMG + result.getPosterPath())
+                Glide.with(context).load(Constants.getImageUrl() + result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -135,7 +134,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return movieResults.get(position);
     }
 
-    protected class MovieVH extends RecyclerView.ViewHolder{
+    protected class MovieVH extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.movie_poster)ImageView imageView;
         @BindView(R.id.movie_progress)ProgressBar progressBar;
         @BindView(R.id.movie_title)TextView textViewTitle;
@@ -147,19 +146,19 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public MovieVH(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("overview", movie.getOverview());
-                    bundle.putString("path", movie.getPosterPath());
-                    bundle.putString("title", movie.getOriginalTile());
-                    bundle.putInt("moveId", movie.getId());
-                    bundle.putString("date", movie.getReleaseDate());
-                    if (movieResults.size() > 0){movieResults.clear();}
-                    listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(), movie.getOriginalTile(), movie.getReleaseDate());
-                }
-            });
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Bundle bundle = new Bundle();
+            bundle.putString("overview", movie.getOverview());
+            bundle.putString("path", movie.getPosterPath());
+            bundle.putString("title", movie.getOriginalTile());
+            bundle.putInt("moveId", movie.getId());
+            bundle.putString("date", movie.getReleaseDate());
+            if (movieResults.size() > 0){movieResults.clear();}
+            listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(), movie.getOriginalTile(), movie.getReleaseDate());
         }
     }
 
