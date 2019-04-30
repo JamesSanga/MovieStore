@@ -85,12 +85,23 @@ public class HostFragment extends Fragment implements HostView {
         View view = inflater.inflate(R.layout.fragment_host, container, false);
         ButterKnife.bind(this, view);
         ((MovieStore)getActivity().getApplication()).getMyApplicationComponents().inject(this);
-        number = preferences.getInt("No", 0);
-        presenter = new HostPresenter(this, number);
+        setToolBar();
+        initialize();
         presenter.getData();
         refreshPage();
-        setToolBar();
         return view;
+    }
+
+    private void initialize() {
+        number = preferences.getInt("No", 0);
+        presenter = new HostPresenter(this, number);
+        mBuilder = new AlertDialog.Builder(getContext());
+        adapter = new MoviesAdapter(getContext());
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        //setting recycler view
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
     }
 
     private void setToolBar() {
@@ -107,7 +118,6 @@ public class HostFragment extends Fragment implements HostView {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_settings) {
             showChangeMoviesOptions();
             return true;
@@ -130,6 +140,7 @@ public class HostFragment extends Fragment implements HostView {
                 isLoading = false;
                 List<Movie> results = response.body().getResults();
                 adapter.addAll(results);
+                adapter.notifyDataSetChanged();
 
                 if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
                 else isLastPage = true;
@@ -152,13 +163,10 @@ public class HostFragment extends Fragment implements HostView {
     }
 
     private void showChangeMoviesOptions() {
-        number = preferences.getInt("No", 0);
-        mBuilder = new AlertDialog.Builder(getContext());
         mBuilder.setTitle("Sort movies by");
         mBuilder.setSingleChoiceItems(moviesOptions, number, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
                 if (i==0){
                     setMovies(String.valueOf(i));
                 }else if (i==1) {
@@ -200,13 +208,8 @@ public class HostFragment extends Fragment implements HostView {
 
     @Override
     public void showResults(List<Movie> moveData) {
-        adapter = new MoviesAdapter(getContext());
         adapter.addAll(moveData);
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-
+        adapter.notifyDataSetChanged();
         recyclerView.addOnScrollListener(new MoviesScrollListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
