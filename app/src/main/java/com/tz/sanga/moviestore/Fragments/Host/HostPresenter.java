@@ -26,13 +26,11 @@ public class HostPresenter {
     private HostView hostView;
     private Service movieService;
     private int movePreference;
-
-    Context context;
+    private Context context;
 
     public HostPresenter(Context context) {
         this.context = context;
     }
-
     public HostPresenter(HostView hostView, int movePreference) {
         this.hostView = hostView;
         this.movePreference = movePreference;
