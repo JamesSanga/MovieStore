@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.tz.sanga.moviestore.Fragments.Host.HostPresenter;
+import com.tz.sanga.moviestore.Constants;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.R;
 
@@ -29,14 +28,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
     private static final int ITEM = 0;
     private static final int LOADING = 1;
-    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
     private List<Movie> movieResults;
     private Context context;
     private boolean isLoadingAdded = false;
-    private static final String TAG = "TAG";
     private LayoutInflater inflater;
 
     public MoviesAdapter(Context context) {
@@ -82,14 +78,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case ITEM:
                 // final MovieVH movieVH = (MovieVH) holder;
                 final MovieVH movieVH = (MovieVH) holder;
-                movieVH.movie = getItem(position);;
+                movieVH.movie = getItem(position);
                 movieVH.textViewTitle.setText(movieVH.movie.getTitle());
-                movieVH.textViewDate.setText(
-                        movieVH.movie.getReleaseDate().substring(0, 4)//year only
+                movieVH.textViewDate.setText(movieVH.movie.getReleaseDate().substring(0, 4)//year only
                                 + " | "+ movieVH.movie.getOriginalLanguage().toUpperCase());
                 movieVH.textViewVoteAverage.setText("Vote average" + ": "+String.valueOf(movieVH.movie.getVoteAverage()));
+
                 //load images by glide library
-                Glide .with(context).load(BASE_URL_IMG + movieVH.movie.getPosterPath())
+                Glide .with(context).load(Constants.getImageUrl() + movieVH.movie.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -174,7 +170,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return movieResults.get(position);
     }
 
-    protected class MovieVH extends RecyclerView.ViewHolder{
+    protected class MovieVH extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.movie_progress)ProgressBar progressBar;
         @BindView(R.id.movie_poster)ImageView imageView;
         @BindView(R.id.movie_title)TextView textViewTitle;
@@ -185,22 +181,18 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public MovieVH(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            //   itemView.setOnClickListener( Navigation.createNavigateOnClickListener(R.id.action_blankFragment_to_firstFragment));
+            itemView.setOnClickListener(this);
+        }
 
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("overview", movie.getOverview());
-                    bundle.putString("path", movie.getPosterPath());
-                    bundle.putString("title", movie.getOriginalTile());
-                    bundle.putInt("moveId", movie.getId());
-                    bundle.putString("date", movie.getReleaseDate());
-                    Navigation.findNavController(itemView).navigate(R.id.action_blankFragment_to_firstFragment, bundle);
-                }
-            });
-
+        @Override
+        public void onClick(View v) {
+            Bundle bundle = new Bundle();
+            bundle.putString("overview", movie.getOverview());
+            bundle.putString("path", movie.getPosterPath());
+            bundle.putString("title", movie.getOriginalTile());
+            bundle.putInt("moveId", movie.getId());
+            bundle.putString("date", movie.getReleaseDate());
+            Navigation.findNavController(itemView).navigate(R.id.action_blankFragment_to_firstFragment, bundle);
         }
     }
 
