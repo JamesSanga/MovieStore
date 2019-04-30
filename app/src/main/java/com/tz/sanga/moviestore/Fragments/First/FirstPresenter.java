@@ -23,13 +23,13 @@ public class FirstPresenter {
     private FirstView firstView;
     private Service service;
     private int moveId;
+    private Context context;
+
 
     public FirstPresenter(FirstView firstView, int moveId) {
         this.firstView = firstView;
         this.moveId = moveId;
     }
-
-    Context context;
 
     public FirstPresenter(Context context) {
         this.context = context;
