@@ -44,24 +44,23 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         return moveData.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.name_trailer) TextView textView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION){
-                        Intent intent = new Intent(context, YoutubePlayer.class);
-                        intent.putExtra("key", moveData.get(position).getKey());
-                        intent.putExtra("name", moveData.get(position).getName());
-                        context.startActivity(intent);
-                    }
-                }
-            });
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION){
+                Intent intent = new Intent(context, YoutubePlayer.class);
+                intent.putExtra("key", moveData.get(position).getKey());
+                intent.putExtra("name", moveData.get(position).getName());
+                context.startActivity(intent);
+            }
         }
     }
 }
