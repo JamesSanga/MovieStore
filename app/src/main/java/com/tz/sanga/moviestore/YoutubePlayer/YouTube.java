@@ -14,6 +14,7 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.tz.sanga.moviestore.Activities.MainActivity;
+import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.R;
 
 import butterknife.BindView;
@@ -82,7 +83,7 @@ public class YouTube extends Fragment {
 
             }
         };
-        playerView.initialize(YoutubeConfig.getApiKey(), init);
+        playerView.initialize(BuildConfig.THE_YOUTUBE_API_TOKEN, init);
 
     }
 }
