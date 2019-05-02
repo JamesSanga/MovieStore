@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="1dp"
-    CardView:cardCornerRadius="2dp"
-    CardView:cardElevation="2dp"
+    CardView:cardCornerRadius="1dp"
     android:background="@color/white">
 
     <RelativeLayout
