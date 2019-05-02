@@ -11,4 +11,10 @@
         android:orderInCategory="100"
         android:title="@string/add_favorite"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/goToMvvm"
+        android:orderInCategory="100"
+        android:title="@string/mvvm"
+        app:showAsAction="never"/>
 </menu>
