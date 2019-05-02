@@ -49,7 +49,7 @@ public class BlankFragment extends Fragment {
     private void setToolBar() {
         ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.mvvp);
+        actionBar.setTitle(R.string.mvvm);
     }
 
     private void createViewModel(){
