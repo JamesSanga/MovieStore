@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -79,7 +80,7 @@ public class HostFragment extends Fragment implements HostView {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_host, container, false);
@@ -124,6 +125,9 @@ public class HostFragment extends Fragment implements HostView {
         }
         if (id == R.id.goToFavorite) {
             Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_favoriteFargment);
+        }
+        if (id == R.id.goToMvvm){
+            Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_blankFragment2);
         }
         return super.onOptionsItemSelected(item);
     }
