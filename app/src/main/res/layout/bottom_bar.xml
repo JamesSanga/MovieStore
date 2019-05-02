@@ -31,8 +31,8 @@
             android:id="@+id/exitTrailer"
             android:layout_centerVertical="true"
             android:background="@drawable/ic_cancel_black_24dp"
-            android:layout_width="40sp"
-            android:layout_height="40sp" />
+            android:layout_width="30sp"
+            android:layout_height="30sp" />
     </RelativeLayout>
 </android.support.v7.widget.Toolbar>
 </RelativeLayout>
