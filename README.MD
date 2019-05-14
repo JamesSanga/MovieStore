@@ -1,2 +1,2 @@
 ##Movie Store
- - A way to see your favourite movies
+ - The application that list movies in paination and user can view movie detail, similar movies, add favorite moves and play movies trailer
