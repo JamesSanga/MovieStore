@@ -17,4 +17,8 @@
         <!-- TODO: Remove or change this placeholder text -->
         <string name="hello_blank_fragment">Hello blank fragment</string>
         <string name="mvvm">MVVM</string>
+        <string name="desc">Description</string>
+        <string name="title">Title</string>
+        <string name="priority">Priority</string>
+        <string name="note">Add favorite</string>
 </resources>
