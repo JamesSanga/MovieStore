@@ -2,12 +2,9 @@ package com.tz.sanga.moviestore.Fragments;
 
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -23,8 +20,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +31,7 @@ import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
+import com.tz.sanga.moviestore.Constants;
 import com.tz.sanga.moviestore.Model.Favorite;
 import com.tz.sanga.moviestore.Model.FavoriteDb;
 import com.tz.sanga.moviestore.Model.MovieObjects;
@@ -48,8 +44,6 @@ import butterknife.ButterKnife;
 
 
 public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataListener, FavoriteAdapter.favoriteOnLongClickListener{
-    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/original";
-
     @BindView(R.id.refresh_favorite_movies) SwipeRefreshLayout refreshLayout;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.empty_view)TextView textView;
@@ -58,7 +52,6 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     GridLayoutManager layoutManager;
     FavoriteAdapter favoriteAdapter;
     private FavoriteDb favoriteDb;
-
     AlertDialog.Builder mDialog;
 
     public FavoriteFragment() {
@@ -184,7 +177,7 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
         PhotoView imageView = mView.findViewById(R.id.imageView);
         final ProgressBar progressBar = mView.findViewById(R.id.full_image_loading);
         Glide.with(getContext())
-                .load(BASE_URL_IMG+path)
+                .load(Constants.getImageUrl() +path)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
