@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/view_to_scroll"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/view_to_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/relative_layout"
@@ -14,6 +15,7 @@
             android:background="@color/lightGray"
             android:id="@+id/recycler_view_trailer"
             android:layout_width="match_parent"
+                tools:listitem="@layout/trailer_view"
             android:layout_height="200dp">
         </android.support.v7.widget.RecyclerView>
 
@@ -90,6 +92,7 @@
             android:layout_margin="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            tools:listitem="@layout/related_layout"
             android:layout_gravity="center"
             android:orientation="horizontal"
             app:msrv_gravity="start"
