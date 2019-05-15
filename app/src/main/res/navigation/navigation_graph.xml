@@ -73,7 +73,17 @@
         tools:layout="@layout/fragment_youtube" />
         <fragment
                 android:id="@+id/blankFragment2"
-                android:name="com.tz.sanga.moviestore.Mvvm.BlankFragment"
+                android:name="com.tz.sanga.moviestore.Fragments.BlankFragment"
                 android:label="fragment_blank"
-                tools:layout="@layout/fragment_blank" />
+                tools:layout="@layout/fragment_blank" >
+            <argument
+                    android:name="title"
+                    app:argType="string" />
+            <argument
+                    android:name="overview"
+                    app:argType="string" />
+            <argument
+                    android:name="path"
+                    app:argType="string" />
+        </fragment>
 </navigation>
