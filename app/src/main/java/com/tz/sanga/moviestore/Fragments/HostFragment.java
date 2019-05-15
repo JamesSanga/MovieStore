@@ -1,6 +1,8 @@
 package com.tz.sanga.moviestore.Fragments;
 
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -8,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -25,25 +28,27 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.tz.sanga.moviestore.BuildConfig;
-import com.tz.sanga.moviestore.Fragments.Host.HostPresenter;
-import com.tz.sanga.moviestore.Fragments.Host.HostView;
+import androidx.navigation.Navigation;
+
 import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.MoviesAdapter;
+import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.DaggerInjection.MovieStore;
+import com.tz.sanga.moviestore.Fragments.Host.HostPresenter;
+import com.tz.sanga.moviestore.Fragments.Host.HostView;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.R;
 import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
+import com.tz.sanga.moviestore.ViewModel.HostViewModel;
 
 import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
-import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -51,7 +56,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class HostFragment extends Fragment implements HostView {
+public class HostFragment extends Fragment implements HostView, MoviesAdapter.MVVM {
 
     @Inject
     public SharedPreferences preferences;
@@ -65,6 +70,7 @@ public class HostFragment extends Fragment implements HostView {
     LinearLayoutManager layoutManager;
     final String [] moviesOptions ={"Popular movies", "Top rated movies"};
     AlertDialog.Builder mBuilder;
+    Bundle bundle;
 
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
@@ -86,8 +92,10 @@ public class HostFragment extends Fragment implements HostView {
         View view = inflater.inflate(R.layout.fragment_host, container, false);
         ButterKnife.bind(this, view);
         ((MovieStore)getActivity().getApplication()).getMyApplicationComponents().inject(this);
+        bundle = new Bundle();
         setToolBar();
         initialize();
+//        getData();
         presenter.getData();
         refreshPage();
         return view;
@@ -127,11 +135,21 @@ public class HostFragment extends Fragment implements HostView {
             Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_favoriteFargment);
         }
         if (id == R.id.goToMvvm){
-            Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_blankFragment2);
+            Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_blankFragment2, bundle);
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void getData(){
+        HostViewModel viewModel = ViewModelProviders.of(this).get(HostViewModel.class);
+        viewModel.getMovies(getContext()).observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movies) {
+                adapter.addAll(movies);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
 
     private void loadNextPage(){
     //   presenter.loadNext();
@@ -186,7 +204,7 @@ public class HostFragment extends Fragment implements HostView {
 
     private void setMovies(String i) {
         Locale locale = new Locale(i);
-        locale.setDefault(locale);
+        Locale.setDefault(locale);
         Configuration configuration = new Configuration();
         configuration.locale = locale;
        getActivity().getBaseContext().getResources().updateConfiguration(configuration, getActivity()
@@ -265,5 +283,16 @@ public class HostFragment extends Fragment implements HostView {
         if (b){ adapter.removeLoadingFooter();}
         if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
         else isLastPage = true;
+    }
+
+    @Override
+    public void toMVVM(String title, String posterPath, String overview) {
+        goToMVVM(title, posterPath, overview);
+    }
+
+    private void goToMVVM(String title, String posterPath, String overview) {
+        bundle.putString("title", title);
+        bundle.putString("path", posterPath);
+        bundle.putString("overview", overview);
     }
 }
