@@ -26,14 +26,13 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
+import com.tz.sanga.moviestore.Activities.MainActivity;
+import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.Adapters.TrailerAdapter;
 import com.tz.sanga.moviestore.Constants;
 import com.tz.sanga.moviestore.Fragments.First.FirstPresenter;
 import com.tz.sanga.moviestore.Fragments.First.FirstView;
-import com.tz.sanga.moviestore.Activities.MainActivity;
-import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.Model.FavoriteDb;
-import com.tz.sanga.moviestore.Model.MovieObjects;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.Trailer;
 import com.tz.sanga.moviestore.R;
@@ -132,6 +131,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         this.overview = overview;
         this.title = title;
         this.date = date;
+        Log.d(TAG, "setData: " + path);
     }
     private void initialize(){
         setView();
