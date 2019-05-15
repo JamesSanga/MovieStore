@@ -17,7 +17,8 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/Movie_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:listitem="@layout/movie_layout">
         </android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
