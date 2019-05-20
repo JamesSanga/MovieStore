@@ -6,7 +6,7 @@
     app:startDestination="@id/blankFragment">
     <fragment
         android:id="@+id/blankFragment"
-        android:name="com.tz.sanga.moviestore.Fragments.HostFragment"
+        android:name="com.tz.sanga.moviestore.UI.HostFragment"
         android:label="fragment_blank"
         tools:layout="@layout/fragment_host" >
         <action
@@ -17,11 +17,6 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/to_fragment" />
         <action
-            android:id="@+id/action_blankFragment_to_favoriteFargment"
-            app:destination="@id/favoriteFargment"
-            app:enterAnim="@anim/left_to_right"
-            app:popExitAnim="@anim/to_fragment" />
-        <action
             android:id="@+id/action_blankFragment_to_blankFragment2"
             app:destination="@id/blankFragment2"
             app:enterAnim="@anim/left_to_right"
@@ -30,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/firstFragment"
-        android:name="com.tz.sanga.moviestore.Fragments.FirstFragment"
+        android:name="com.tz.sanga.moviestore.UI.FirstFragment"
         android:label="fragment_first"
         tools:layout="@layout/fragment_first" >
         <argument
@@ -55,27 +50,15 @@
             app:popExitAnim="@anim/to_fragment" />
     </fragment>
     <fragment
-        android:id="@+id/favoriteFargment"
-        android:name="com.tz.sanga.moviestore.Fragments.FavoriteFragment"
-        android:label="fragment_favorite_fargment"
-        tools:layout="@layout/fragment_favorite" >
-        <argument
-            android:name="trailerName"
-            app:argType="string" />
-        <argument
-            android:name="trailerKey"
-            app:argType="integer" />
-    </fragment>
-    <fragment
         android:id="@+id/youTube"
-        android:name="com.tz.sanga.moviestore.YoutubePlayer.YouTube"
+        android:name="com.tz.sanga.moviestore.UI.YouTube"
         android:label="fragment_youtube"
         tools:layout="@layout/fragment_youtube" />
         <fragment
                 android:id="@+id/blankFragment2"
-                android:name="com.tz.sanga.moviestore.Fragments.BlankFragment"
+                android:name="com.tz.sanga.moviestore.UI.FavoriteFragment"
                 android:label="fragment_blank"
-                tools:layout="@layout/fragment_blank" >
+                tools:layout="@layout/fragment_favorite" >
             <argument
                     android:name="title"
                     app:argType="string" />
