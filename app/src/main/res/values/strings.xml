@@ -11,7 +11,7 @@
         <string name="add_favorite">Favorite</string>
         <string name="about_move">About movie</string>
         <string name="move_details">Movie details</string>
-        <string name="empty_view">Once you added favorite movies will appear here</string>
+        <string name="empty_view">Once you add favorite movies will appear here</string>
         <string name="clear_favorite">Clear Favorites</string>
 
         <!-- TODO: Remove or change this placeholder text -->
@@ -21,4 +21,5 @@
         <string name="title">Title</string>
         <string name="priority">Priority</string>
         <string name="note">Add favorite</string>
+        <string name="add_mvvm_favorite">Add mvvm favorite</string>
 </resources>
