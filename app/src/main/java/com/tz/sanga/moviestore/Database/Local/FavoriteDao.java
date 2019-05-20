@@ -24,11 +24,11 @@ public interface FavoriteDao {
     @Query("DELETE FROM favorite")
     void deleteAllFavorites();
 
-    @Query("SELECT EXISTS(SELECT 1 FROM Favorite WHERE id =:id)")
-    int checkFavorite(int id);
-
     @Query("SELECT * FROM favorite ORDER BY id DESC")
     LiveData<List<FavoriteNote>> getAllFavorites();
+
+    @Query("SELECT id FROM favorite WHERE path =:path")
+    LiveData<List<FavoriteNote>> getId(String path);
 
     @Query("SELECT EXISTS(SELECT 1 FROM Favorite WHERE path =:path)")
     boolean getPath(String path);
