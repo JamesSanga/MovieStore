@@ -1,7 +1,6 @@
-package com.tz.sanga.moviestore.Fragments.First;
+package com.tz.sanga.moviestore.Presenters.First;
 
 import com.tz.sanga.moviestore.Model.Movie;
-import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.Model.Trailer;
 
 import java.util.List;
