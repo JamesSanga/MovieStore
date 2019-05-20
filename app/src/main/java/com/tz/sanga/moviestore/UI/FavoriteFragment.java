@@ -29,11 +29,8 @@ import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Constants;
-import com.tz.sanga.moviestore.Database.DataSource.FavoriteDataSource;
-import com.tz.sanga.moviestore.Database.Local.FavoriteDatabase;
 import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
 import com.tz.sanga.moviestore.R;
-import com.tz.sanga.moviestore.Repositories.Repository;
 import com.tz.sanga.moviestore.ViewModel.FavoriteViewModel;
 
 import java.util.List;
@@ -95,8 +92,6 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
         favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
         adapter = new FavoriteAdapter(getContext(), this, this);
         mDialog = new AlertDialog.Builder(getContext());
-        Constants.favoriteRoomDatabase = FavoriteDatabase.getInstance(getContext());
-        Constants.repository = Repository.getInstance(FavoriteDataSource.getInstance(Constants.favoriteRoomDatabase.favoriteDao()));
     }
 
     private void setAdapter(){
