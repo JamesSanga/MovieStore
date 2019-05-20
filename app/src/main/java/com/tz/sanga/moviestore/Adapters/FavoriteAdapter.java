@@ -83,10 +83,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHold
         notifyDataSetChanged();
     }
 
-    public FavoriteNote getFavoriteNoteAt(int position){
-        return movieObjects.get(position);
-    }
-
     public interface dataListener {
         void onClickFavorite(String path);
     }
