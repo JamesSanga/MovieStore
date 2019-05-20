@@ -139,10 +139,12 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         Log.d(TAG, "setData: " + path);
     }
     private void initialize(){
+        Constants.favoriteRepository = new FavoriteRepository(getContext());
         favoriteNote = new FavoriteNote(title, path, overview);
         favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
         adapter = new RelatedAdapter(getContext(),this);
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        layoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
         multiSnapRecyclerView.setLayoutManager(layoutManager);
         multiSnapRecyclerView.setItemAnimator(new DefaultItemAnimator());
         multiSnapRecyclerView.setAdapter(adapter);
@@ -165,15 +167,15 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
                 .load(Constants.getImageUrl() + path)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
-                                               boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<GlideDrawable>
+                            target, boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
-
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                                                   boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(GlideDrawable resource, String model,Target
+                            <GlideDrawable> target,boolean isFromMemoryCache,
+                                                   boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
@@ -183,8 +185,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     }
 
     private void checkFavoriteMovie(final View view){
-        FavoriteRepository favoriteRepository = new FavoriteRepository(getContext());
-        if (favoriteRepository.getPath(path)){
+        if (Constants.favoriteRepository.getPath(path)){
             Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG)
                     .setAction("REMOVE", new View.OnClickListener() {
                         @Override
@@ -204,10 +205,15 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
            }).show();
     }
 
-
     public void deleteFavorite(View view){
-        favoriteViewModel.delete(favoriteNote);
-        Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();
+//        favoriteViewModel.getId().observe(this, new Observer<List<FavoriteNote>>() {
+//            @Override
+//            public void onChanged(@Nullable List<FavoriteNote> favoriteNotes) {
+//                Log.d(TAG, "onChanged: "+ favoriteNotes.get(getId()));
+//            }
+//        });
+//        favoriteViewModel.delete(favoriteNote);
+//            Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -229,7 +235,8 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     }
 
     @Override
-    public void onReload(int moveId, String path, String overview, String title, String date) {
+    public void onReload(int moveId, String path, String overview,
+                         String title, String date) {
         setData(moveId,path,overview,title, date);
         scrollView.fullScroll(View.FOCUS_BACKWARD);
         presenter.updateMoveId(moveId);
@@ -242,7 +249,8 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         List<Trailer> moveData;
         TrailerAdapter trailerAdapter;
         moveData = new ArrayList<>();
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        layoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.VERTICAL, false);
         trailerAdapter = new TrailerAdapter(getContext(), moveData);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(trailerAdapter);
