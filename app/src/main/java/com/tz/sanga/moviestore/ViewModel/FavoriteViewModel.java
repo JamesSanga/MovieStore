@@ -14,11 +14,13 @@ public class FavoriteViewModel extends AndroidViewModel {
 
     private FavoriteRepository favoriteRepository;
     private LiveData<List<FavoriteNote>> allFavorites;
+   // private LiveData<List<FavoriteNote>> Id;
 
     public FavoriteViewModel(@NonNull Application application) {
         super(application);
         favoriteRepository = new FavoriteRepository(application);
         allFavorites = favoriteRepository.getAllFavorites();
+       // Id = favoriteRepository.getId();
     }
     public void insert(FavoriteNote favoriteNote){
         favoriteRepository.insert(favoriteNote);
@@ -35,6 +37,10 @@ public class FavoriteViewModel extends AndroidViewModel {
     public void deleteAll(){
         favoriteRepository.deleteAllFavorites();
     }
+
+//    public LiveData<List<FavoriteNote>>getId(){
+//        return Id;
+//    }
 
     public LiveData<List<FavoriteNote>>getAllFavorites(){
         return allFavorites;
