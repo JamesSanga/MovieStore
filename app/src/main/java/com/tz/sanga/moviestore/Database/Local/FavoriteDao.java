@@ -30,6 +30,7 @@ public interface FavoriteDao {
     @Query("SELECT * FROM favorite ORDER BY id DESC")
     LiveData<List<FavoriteNote>> getAllFavorites();
 
-    @Query("SELECT * FROM favorite WHERE path ==:path")
-    LiveData<List<FavoriteNote>> getPath(String path);
+    @Query("SELECT EXISTS(SELECT 1 FROM Favorite WHERE path =:path)")
+    boolean getPath(String path);
+
 }
