@@ -38,7 +38,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataListener, FavoriteAdapter.favoriteOnLongClickListener {
+public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataListener,
+        FavoriteAdapter.favoriteOnLongClickListener {
 
     @BindView(R.id.note_recycler_view) RecyclerView recyclerView;
     @BindView(R.id.empty_favorite) TextView emptyTextView;
@@ -100,7 +101,8 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     }
 
     private void createViewModel(){
-        favoriteViewModel.getAllFavorites().observe(this, new Observer<List<FavoriteNote>>() {
+        favoriteViewModel.getAllFavorites().observe(this, new Observer<List<FavoriteNote>>()
+        {
             @Override
             public void onChanged(@Nullable List<FavoriteNote> favoriteNotes) {
                adapter.setFavoriteList(favoriteNotes);
@@ -120,15 +122,16 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
                 .load(Constants.getImageUrl() + path)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
-                                               boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<GlideDrawable>
+                            target, boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                                                   boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target
+                            <GlideDrawable> target, boolean isFromMemoryCache,
+                                                   boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
@@ -169,7 +172,8 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 favoriteViewModel.deleteAll();
-                Toast.makeText(getContext(), "Favorite movies cleared ", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(),"Favorite movies cleared ", Toast.LENGTH_LONG)
+                        .show();
                 createViewModel();
             }
         });
