@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.DaggerInjection;
+package com.tz.sanga.moviestore.DI;
 
 import android.content.Context;
 import android.content.SharedPreferences;
