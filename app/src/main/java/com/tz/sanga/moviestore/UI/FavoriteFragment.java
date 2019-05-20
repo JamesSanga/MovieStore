@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Fragments;
+package com.tz.sanga.moviestore.UI;
 
 
 import android.app.AlertDialog;
@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.GridLayoutManager;;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,30 +27,29 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.tz.sanga.moviestore.Activities.MainActivity;
-import com.tz.sanga.moviestore.Adapters.Adapter;
+import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Constants;
-import com.tz.sanga.moviestore.Model.FavoriteNote;
-import com.tz.sanga.moviestore.Repository.FavoriteRepository;
-import com.tz.sanga.moviestore.ViewModel.FavoriteViewModel;
+import com.tz.sanga.moviestore.Database.DataSource.FavoriteDataSource;
+import com.tz.sanga.moviestore.Database.Local.FavoriteDatabase;
+import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
 import com.tz.sanga.moviestore.R;
+import com.tz.sanga.moviestore.Repositories.Repository;
+import com.tz.sanga.moviestore.ViewModel.FavoriteViewModel;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BlankFragment extends Fragment implements Adapter.dataListener, Adapter.favoriteOnLongClickListener {
+public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataListener, FavoriteAdapter.favoriteOnLongClickListener {
 
     @BindView(R.id.note_recycler_view) RecyclerView recyclerView;
     @BindView(R.id.empty_favorite) TextView emptyTextView;
     private FavoriteViewModel favoriteViewModel;
     private AlertDialog.Builder mDialog;
-    private FavoriteNote favoriteNote;
-    private Adapter adapter;
-    private String path = "/or06FN3Dka5tukK1e9sl16pB3iy.jpg";
+    private FavoriteAdapter adapter;
 
-    public BlankFragment() {
+    public FavoriteFragment() {
         // Required empty public constructor
         setHasOptionsMenu(true);
     }
@@ -59,7 +58,7 @@ public class BlankFragment extends Fragment implements Adapter.dataListener, Ada
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_blank, container, false);
+        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         ButterKnife.bind(this,view);
         setToolBar();
         initialize();
@@ -70,17 +69,12 @@ public class BlankFragment extends Fragment implements Adapter.dataListener, Ada
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
+        int id = item.getItemId();
+        if (id == android.R.id.home){
             getActivity().onBackPressed();
             return true;
-        }
-        else if (item.getItemId() == R.id.action_add){
-            checkFavoriteMovie();
-            return true;
-        }else if(item.getItemId() == R.id.action_delete_all){
-            favoriteViewModel.deleteAll();
-            Toast.makeText(getContext(), "Favorite cleared ", Toast.LENGTH_LONG).show();
-            createViewModel();
+        }else if(id == R.id.action_delete_all){
+            warnUser();
             return true;
         }else
         return super.onOptionsItemSelected(item);
@@ -94,14 +88,15 @@ public class BlankFragment extends Fragment implements Adapter.dataListener, Ada
     private void setToolBar() {
         ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.mvvm);
+        actionBar.setTitle(R.string.favorite_movies);
     }
 
     private void initialize(){
         favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
-        adapter = new Adapter(getContext(), this, this);
+        adapter = new FavoriteAdapter(getContext(), this, this);
         mDialog = new AlertDialog.Builder(getContext());
-        favoriteNote = new FavoriteNote("Avengers", "/or06FN3Dka5tukK1e9sl16pB3iy.jpg", "Movie");
+        Constants.favoriteRoomDatabase = FavoriteDatabase.getInstance(getContext());
+        Constants.repository = Repository.getInstance(FavoriteDataSource.getInstance(Constants.favoriteRoomDatabase.favoriteDao()));
     }
 
     private void setAdapter(){
@@ -121,17 +116,6 @@ public class BlankFragment extends Fragment implements Adapter.dataListener, Ada
         });
     }
 
-    private void checkFavoriteMovie(){
-        favoriteViewModel.checkFavorite().observe(this, new Observer<List<FavoriteNote>>() {
-            @Override
-            public void onChanged(@Nullable List<FavoriteNote> favoriteNotes) {
-                if (favoriteNotes.size() >= 1){
-                    Toast.makeText(getContext(), "Already in favorite", Toast.LENGTH_LONG).show();
-                }else insertFavoriteMovie();
-            }
-        });
-    }
-
     private void zoom(String path) {
         View mView = getLayoutInflater().inflate(R.layout.add_note, null);
         PhotoView imageView = mView.findViewById(R.id.zoomImageView);
@@ -141,13 +125,15 @@ public class BlankFragment extends Fragment implements Adapter.dataListener, Ada
                 .load(Constants.getImageUrl() + path)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
+                                               boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
+                                                   boolean isFromMemoryCache, boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
@@ -160,12 +146,6 @@ public class BlankFragment extends Fragment implements Adapter.dataListener, Ada
         mDialog.show();
     }
 
-    private void insertFavoriteMovie() {
-        favoriteViewModel.insert(favoriteNote);
-        Toast.makeText(getContext(), "Favorite added", Toast.LENGTH_LONG).show();
-
-    }
-
     private void warnUser(final FavoriteNote favoriteNote, String title){
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setMessage( title +" will be deleted");
@@ -173,6 +153,29 @@ public class BlankFragment extends Fragment implements Adapter.dataListener, Ada
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 favoriteViewModel.delete(favoriteNote);
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialogBuilder.setCancelable(true);
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    private void warnUser(){
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setMessage("All favorite movies will be cleared");
+        alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                favoriteViewModel.deleteAll();
+                Toast.makeText(getContext(), "Favorite movies cleared ", Toast.LENGTH_LONG).show();
+                createViewModel();
             }
         });
 

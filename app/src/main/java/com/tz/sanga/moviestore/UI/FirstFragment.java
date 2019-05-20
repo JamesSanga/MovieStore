@@ -1,6 +1,7 @@
-package com.tz.sanga.moviestore.Fragments;
+package com.tz.sanga.moviestore.UI;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -26,16 +27,16 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
-import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.Adapters.TrailerAdapter;
 import com.tz.sanga.moviestore.Constants;
-import com.tz.sanga.moviestore.Fragments.First.FirstPresenter;
-import com.tz.sanga.moviestore.Fragments.First.FirstView;
-import com.tz.sanga.moviestore.Model.FavoriteDb;
+import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.Trailer;
+import com.tz.sanga.moviestore.Presenters.First.FirstPresenter;
+import com.tz.sanga.moviestore.Presenters.First.FirstView;
 import com.tz.sanga.moviestore.R;
+import com.tz.sanga.moviestore.ViewModel.FavoriteViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,10 @@ import butterknife.ButterKnife;
 
 
 public class FirstFragment extends Fragment implements FirstView, RelatedAdapter.ReloadListener {
-    @BindView(R.id.relatedMovies) MultiSnapRecyclerView multiSnapRecyclerView;
-    @BindView(R.id.load_similar_movies) ProgressBar progressBar;
+    @BindView(R.id.relatedMovies)
+    MultiSnapRecyclerView multiSnapRecyclerView;
+    @BindView(R.id.load_similar_movies)
+    ProgressBar progressBar;
     @BindView(R.id.similar_movies_title) TextView textView1;
     @BindView(R.id.movie_details)TextView textOverView;
     @BindView(R.id.add_to_favorite) Button addToFavorite;
@@ -58,13 +61,14 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     @BindView(R.id.recycler_view_trailer)RecyclerView recyclerView;
 
     private static final String TAG = "TAG";
+    private FavoriteViewModel favoriteViewModel;
     private int moveId;
     private String title, path, overview, date;
-    private FavoriteDb favoriteDb;
     private RelatedAdapter adapter;
     LinearLayoutManager layoutManager;
     private ActionBar actionBar;
     FirstPresenter presenter;
+    private FavoriteNote favoriteNote;
 
     public FirstFragment() {
         // Required empty public constructor
@@ -82,6 +86,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         presenter.getData();
         saveMovieDetails();
         initialize();
+        setView();
         setToolBar();
         trailer();
         return view;
@@ -101,13 +106,12 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case android.R.id.home:
-                getActivity().onBackPressed();
-                return true;
-            default:
+        int id = item.getItemId();
+        if(id == android.R.id.home ){
+            getActivity().onBackPressed();
+            return true;
+        }else
                 return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -134,21 +138,20 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         Log.d(TAG, "setData: " + path);
     }
     private void initialize(){
-        setView();
+        favoriteNote = new FavoriteNote(title, path, overview);
+        favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
         adapter = new RelatedAdapter(getContext(),this);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         multiSnapRecyclerView.setLayoutManager(layoutManager);
-
         multiSnapRecyclerView.setItemAnimator(new DefaultItemAnimator());
         multiSnapRecyclerView.setAdapter(adapter);
-
-
     }
+
     private void saveMovieDetails() {
         addToFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addToSqlDB(view);
+                checkFavoriteMovie(view);
             }
         });
     }
@@ -161,13 +164,15 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
                 .load(Constants.getImageUrl() + path)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target,
+                                               boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
+                                                   boolean isFromMemoryCache, boolean isFirstResource) {
                         progressBar.setVisibility(View.GONE);
                         return false;
                     }
@@ -176,28 +181,46 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
                 .into(imageView);
     }
 
-    public void addToSqlDB(final View view) {
-        favoriteDb = new FavoriteDb(getContext());
-        if (!favoriteDb.checkMovie(path)){
-            boolean insertData = favoriteDb.addFavorite(moveId, title, overview, path);
-            if (insertData){
-                Snackbar.make(view, title + " added to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {deleteFavorite(v);}
-                }).show();
-            }else {Snackbar.make(view, title + " not added to favorite", Snackbar.LENGTH_LONG).show();}
+    private void checkFavoriteMovie(final View view){
+        if (Constants.repository.checkFavorite(122) == 1)
+        {
+            Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG)
+                    .setAction("REMOVE", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {deleteFavorite(v);}
+                    }).show();
         }
-        else {Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG).setAction("REMOVE", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {deleteFavorite(v);}
-            }).show();
+        else {
+            addToSqlDB(view);
         }
+//
+//        Constants.repository.getPath(path).observe(this, new Observer<List<FavoriteNote>>() {
+//            @Override
+//            public void onChanged(@Nullable List<FavoriteNote> favoriteNotes) {
+//                if (favoriteNotes.size() >= 1){
+//                    Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG)
+//                    .setAction("REMOVE", new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {deleteFavorite(v);}
+//                    }).show();
+//                }else addToSqlDB(view);
+//            }
+//        });
     }
 
+    public void addToSqlDB(final View view) {
+       favoriteViewModel.insert(favoriteNote);
+           Snackbar.make(view, title + " added to favorite", Snackbar.LENGTH_LONG)
+                   .setAction("REMOVE", new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {deleteFavorite(v);}
+           }).show();
+    }
+
+
     public void deleteFavorite(View view){
-        boolean delete = favoriteDb.deleteMovie(path);
-        if (delete){Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();}
-        if (!delete){ Snackbar.make(view, "Not successful", Snackbar.LENGTH_LONG).show();}
+        favoriteViewModel.delete(favoriteNote);
+        Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();
     }
 
     @Override

@@ -1,7 +1,8 @@
-package com.tz.sanga.moviestore.YoutubePlayer;
+package com.tz.sanga.moviestore.UI;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.R;
 
@@ -24,7 +24,7 @@ import static android.support.constraint.Constraints.TAG;
 
 public class YouTube extends Fragment {
     @BindView(R.id.youtube_video) YouTubePlayerView playerView;
-    private String key, name;
+    private String name;
 
     public YouTube() {
         // Required empty public constructor
@@ -32,7 +32,7 @@ public class YouTube extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_youtube, container, false);
@@ -50,13 +50,12 @@ public class YouTube extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case android.R.id.home:
-                getActivity().onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        int id = item.getItemId();
+        if (id == android.R.id.home){
+            getActivity().onBackPressed();
+            return true;
+        }else
+            return super.onOptionsItemSelected(item);
     }
 
     @Override

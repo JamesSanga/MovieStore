@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.YoutubePlayer;
+package com.tz.sanga.moviestore.UI;
 
 
 import android.os.Bundle;

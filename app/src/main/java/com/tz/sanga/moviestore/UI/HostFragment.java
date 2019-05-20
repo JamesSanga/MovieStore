@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Fragments;
+package com.tz.sanga.moviestore.UI;
 
 
 import android.arch.lifecycle.Observer;
@@ -30,16 +30,15 @@ import android.widget.Toast;
 
 import androidx.navigation.Navigation;
 
-import com.tz.sanga.moviestore.Activities.MainActivity;
 import com.tz.sanga.moviestore.Adapters.MoviesAdapter;
 import com.tz.sanga.moviestore.BuildConfig;
-import com.tz.sanga.moviestore.DaggerInjection.MovieStore;
-import com.tz.sanga.moviestore.Fragments.Host.HostPresenter;
-import com.tz.sanga.moviestore.Fragments.Host.HostView;
+import com.tz.sanga.moviestore.DI.MovieStore;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
+import com.tz.sanga.moviestore.Presenters.Host.HostPresenter;
+import com.tz.sanga.moviestore.Presenters.Host.HostView;
 import com.tz.sanga.moviestore.R;
 import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
 import com.tz.sanga.moviestore.ViewModel.HostViewModel;
@@ -56,7 +55,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class HostFragment extends Fragment implements HostView, MoviesAdapter.MVVM {
+public class HostFragment extends Fragment implements HostView{
 
     @Inject
     public SharedPreferences preferences;
@@ -130,9 +129,6 @@ public class HostFragment extends Fragment implements HostView, MoviesAdapter.MV
         if (id == R.id.action_settings) {
             showChangeMoviesOptions();
             return true;
-        }
-        if (id == R.id.goToFavorite) {
-            Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_favoriteFargment);
         }
         if (id == R.id.goToMvvm){
             Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_blankFragment2, bundle);
@@ -283,11 +279,6 @@ public class HostFragment extends Fragment implements HostView, MoviesAdapter.MV
         if (b){ adapter.removeLoadingFooter();}
         if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
         else isLastPage = true;
-    }
-
-    @Override
-    public void toMVVM(String title, String posterPath, String overview) {
-        goToMVVM(title, posterPath, overview);
     }
 
     private void goToMVVM(String title, String posterPath, String overview) {
