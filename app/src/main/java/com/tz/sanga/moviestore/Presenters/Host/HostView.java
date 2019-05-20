@@ -1,7 +1,6 @@
-package com.tz.sanga.moviestore.Fragments.Host;
+package com.tz.sanga.moviestore.Presenters.Host;
 
 import com.tz.sanga.moviestore.Model.Movie;
-import com.tz.sanga.moviestore.Model.MoviesResponse;
 
 import java.util.List;
 
