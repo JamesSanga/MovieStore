@@ -8,9 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.tz.sanga.moviestore.Model.Trailer;
 import com.tz.sanga.moviestore.R;
-import com.tz.sanga.moviestore.YoutubePlayer.YoutubePlayer;
+import com.tz.sanga.moviestore.UI.YoutubePlayer;
 
 import java.util.List;
 
