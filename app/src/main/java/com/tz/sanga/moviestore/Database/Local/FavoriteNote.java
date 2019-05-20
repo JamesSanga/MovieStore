@@ -1,5 +1,6 @@
-package com.tz.sanga.moviestore.Model;
+package com.tz.sanga.moviestore.Database.Local;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
@@ -7,13 +8,16 @@ import android.arch.persistence.room.PrimaryKey;
 public class FavoriteNote {
 
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
     private int id;
+    @ColumnInfo(name = "title")
     private String title;
+    @ColumnInfo(name = "path")
     private String path;
+    @ColumnInfo(name = "overview")
     private String overview;
 
     public FavoriteNote(String title, String path, String overview) {
-        this.id = id;
         this.title = title;
         this.path = path;
         this.overview = overview;
