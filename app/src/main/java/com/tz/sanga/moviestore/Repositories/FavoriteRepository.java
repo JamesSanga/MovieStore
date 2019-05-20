@@ -1,7 +1,8 @@
 package com.tz.sanga.moviestore.Repositories;
 
-import android.app.Application;
+
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.tz.sanga.moviestore.Database.Local.FavoriteDao;
@@ -14,7 +15,7 @@ public class FavoriteRepository {
     private FavoriteDao favoriteDao;
     private LiveData<List<FavoriteNote>>allFavorites;
 
-    public FavoriteRepository(Application application){
+    public FavoriteRepository(Context application){
         FavoriteDatabase favoriteDatabase = FavoriteDatabase.getInstance(application);
         favoriteDao = favoriteDatabase.favoriteDao();
         allFavorites = favoriteDao.getAllFavorites();
@@ -31,6 +32,10 @@ public class FavoriteRepository {
     }
     public void deleteAllFavorites(){
         new FavoriteRepository.DeleteAllFavoriteAsyncTask(favoriteDao).execute();
+    }
+
+    public boolean getPath(String path){
+        return favoriteDao.getPath(path);
     }
 
     public LiveData<List<FavoriteNote>>getAllFavorites(){
