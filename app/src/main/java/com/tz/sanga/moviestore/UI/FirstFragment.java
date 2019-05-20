@@ -36,6 +36,7 @@ import com.tz.sanga.moviestore.Model.Trailer;
 import com.tz.sanga.moviestore.Presenters.First.FirstPresenter;
 import com.tz.sanga.moviestore.Presenters.First.FirstView;
 import com.tz.sanga.moviestore.R;
+import com.tz.sanga.moviestore.Repositories.FavoriteRepository;
 import com.tz.sanga.moviestore.ViewModel.FavoriteViewModel;
 
 import java.util.ArrayList;
@@ -182,30 +183,16 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     }
 
     private void checkFavoriteMovie(final View view){
-        if (Constants.repository.checkFavorite(122) == 1)
-        {
+        FavoriteRepository favoriteRepository = new FavoriteRepository(getContext());
+        if (favoriteRepository.getPath(path)){
             Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG)
                     .setAction("REMOVE", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {deleteFavorite(v);}
                     }).show();
-        }
-        else {
+        }else {
             addToSqlDB(view);
         }
-//
-//        Constants.repository.getPath(path).observe(this, new Observer<List<FavoriteNote>>() {
-//            @Override
-//            public void onChanged(@Nullable List<FavoriteNote> favoriteNotes) {
-//                if (favoriteNotes.size() >= 1){
-//                    Snackbar.make(view, title + " exist to favorite", Snackbar.LENGTH_LONG)
-//                    .setAction("REMOVE", new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {deleteFavorite(v);}
-//                    }).show();
-//                }else addToSqlDB(view);
-//            }
-//        });
     }
 
     public void addToSqlDB(final View view) {
