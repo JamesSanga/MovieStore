@@ -1,7 +1,7 @@
-package com.tz.sanga.moviestore.DaggerInjection;
+package com.tz.sanga.moviestore.DI;
 
-import com.tz.sanga.moviestore.Activities.BaseActivity;
-import com.tz.sanga.moviestore.Fragments.HostFragment;
+import com.tz.sanga.moviestore.UI.BaseActivity;
+import com.tz.sanga.moviestore.UI.HostFragment;
 
 import javax.inject.Singleton;
 
