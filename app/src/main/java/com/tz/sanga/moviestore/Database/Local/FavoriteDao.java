@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Model;
+package com.tz.sanga.moviestore.Database.Local;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -24,9 +24,12 @@ public interface FavoriteDao {
     @Query("DELETE FROM favorite")
     void deleteAllFavorites();
 
+    @Query("SELECT EXISTS(SELECT 1 FROM Favorite WHERE id =:id)")
+    int checkFavorite(int id);
+
     @Query("SELECT * FROM favorite ORDER BY id DESC")
     LiveData<List<FavoriteNote>> getAllFavorites();
 
-    @Query("SELECT * FROM favorite WHERE path=:favoriteNote")
-    LiveData<List<FavoriteNote>> checkFavorite(String favoriteNote);
+    @Query("SELECT * FROM favorite WHERE path ==:path")
+    LiveData<List<FavoriteNote>> getPath(String path);
 }
