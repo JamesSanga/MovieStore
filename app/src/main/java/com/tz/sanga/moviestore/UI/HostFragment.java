@@ -90,7 +90,8 @@ public class HostFragment extends Fragment implements HostView{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_host, container, false);
         ButterKnife.bind(this, view);
-        ((MovieStore)getActivity().getApplication()).getMyApplicationComponents().inject(this);
+        ((MovieStore)getActivity().getApplication()).getMyApplicationComponents()
+                .inject(this);
         bundle = new Bundle();
         setToolBar();
         initialize();
@@ -105,7 +106,8 @@ public class HostFragment extends Fragment implements HostView{
         presenter = new HostPresenter(this, number);
         mBuilder = new AlertDialog.Builder(getContext());
         adapter = new MoviesAdapter(getContext());
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,
+                false);
         //setting recycler view
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -131,7 +133,8 @@ public class HostFragment extends Fragment implements HostView{
             return true;
         }
         if (id == R.id.goToMvvm){
-            Navigation.findNavController(layout).navigate(R.id.action_blankFragment_to_blankFragment2, bundle);
+            Navigation.findNavController(layout).navigate(
+                    R.id.action_blankFragment_to_blankFragment2, bundle);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -150,10 +153,11 @@ public class HostFragment extends Fragment implements HostView{
     private void loadNextPage(){
     //   presenter.loadNext();
         Service movieService = Connector.getConnector(getContext()).create(Service.class);
-        Call<MoviesResponse> call = movieService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
+        Call<MoviesResponse> call = movieService.getPopularMovies(
+                BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response){
                 adapter.removeLoadingFooter();
                 isLoading = false;
                 List<Movie> results = response.body().getResults();
@@ -170,7 +174,8 @@ public class HostFragment extends Fragment implements HostView{
     }
 
     private void refreshPage(){
-        refreshLayout.setColorScheme(R.color.black, R.color.colorAccent, R.color.colorPrimary, R.color.lightGray);
+        refreshLayout.setColorScheme(R.color.black, R.color.colorAccent, R.color.colorPrimary,
+                R.color.lightGray);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -203,7 +208,7 @@ public class HostFragment extends Fragment implements HostView{
         Locale.setDefault(locale);
         Configuration configuration = new Configuration();
         configuration.locale = locale;
-       getActivity().getBaseContext().getResources().updateConfiguration(configuration, getActivity()
+       getActivity().getBaseContext().getResources().updateConfiguration(configuration,getActivity()
                .getBaseContext().getResources().getDisplayMetrics());
 
 //        save data to shared preferences
