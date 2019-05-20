@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Model;
+package com.tz.sanga.moviestore.Database.Local;
 
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
@@ -23,6 +23,7 @@ public abstract class FavoriteDatabase extends RoomDatabase {
             instance = Room.databaseBuilder(context.getApplicationContext(), FavoriteDatabase.class, "favorite")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomDatabase)
+                    .allowMainThreadQueries()
                     .build();
         }
         return instance;
