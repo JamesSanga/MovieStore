@@ -18,6 +18,7 @@ public class FavoriteNote {
     private String overview;
 
     public FavoriteNote(String title, String path, String overview) {
+        this.id = id;
         this.title = title;
         this.path = path;
         this.overview = overview;
