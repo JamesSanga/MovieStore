@@ -1,25 +1,23 @@
-package com.tz.sanga.moviestore.Repository;
+package com.tz.sanga.moviestore.Repositories;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
-import com.tz.sanga.moviestore.Model.FavoriteDao;
-import com.tz.sanga.moviestore.Model.FavoriteDatabase;
-import com.tz.sanga.moviestore.Model.FavoriteNote;
+import com.tz.sanga.moviestore.Database.Local.FavoriteDao;
+import com.tz.sanga.moviestore.Database.Local.FavoriteDatabase;
+import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
 
 import java.util.List;
 
 public class FavoriteRepository {
     private FavoriteDao favoriteDao;
     private LiveData<List<FavoriteNote>>allFavorites;
-    private LiveData<List<FavoriteNote>>allFiltered;
 
-    public FavoriteRepository(Application application, String favoriteNote){
+    public FavoriteRepository(Application application){
         FavoriteDatabase favoriteDatabase = FavoriteDatabase.getInstance(application);
         favoriteDao = favoriteDatabase.favoriteDao();
         allFavorites = favoriteDao.getAllFavorites();
-        allFiltered = favoriteDao.checkFavorite(favoriteNote);
     }
 
     public void insert(FavoriteNote favoriteNote){
@@ -37,10 +35,6 @@ public class FavoriteRepository {
 
     public LiveData<List<FavoriteNote>>getAllFavorites(){
         return allFavorites;
-    }
-
-    public LiveData<List<FavoriteNote>>checkFavorite(){
-        return allFiltered;
     }
 
     private static class InsertFavoriteAsyncTask extends AsyncTask<FavoriteNote, Void, Void> {
