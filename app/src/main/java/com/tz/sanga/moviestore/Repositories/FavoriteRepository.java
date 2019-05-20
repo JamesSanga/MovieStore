@@ -14,11 +14,13 @@ import java.util.List;
 public class FavoriteRepository {
     private FavoriteDao favoriteDao;
     private LiveData<List<FavoriteNote>>allFavorites;
+    //private LiveData<List<FavoriteNote>>Id;
 
     public FavoriteRepository(Context application){
         FavoriteDatabase favoriteDatabase = FavoriteDatabase.getInstance(application);
         favoriteDao = favoriteDatabase.favoriteDao();
         allFavorites = favoriteDao.getAllFavorites();
+        //Id = favoriteDao.getId(path);
     }
 
     public void insert(FavoriteNote favoriteNote){
@@ -41,6 +43,9 @@ public class FavoriteRepository {
     public LiveData<List<FavoriteNote>>getAllFavorites(){
         return allFavorites;
     }
+//    public LiveData<List<FavoriteNote>>getId(){
+//        return Id;
+//    }
 
     private static class InsertFavoriteAsyncTask extends AsyncTask<FavoriteNote, Void, Void> {
         private FavoriteDao favoriteDao;
