@@ -1,4 +1,4 @@
-package com.tz.sanga.moviestore.Activities;
+package com.tz.sanga.moviestore.UI;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.tz.sanga.moviestore.DaggerInjection.MovieStore;
+import com.tz.sanga.moviestore.DI.MovieStore;
 
 import javax.inject.Inject;
 
