@@ -1,13 +1,13 @@
-package com.tz.sanga.moviestore.Fragments.Host;
+package com.tz.sanga.moviestore.Presenters.Host;
 
 import android.content.Context;
 
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
-import com.tz.sanga.moviestore.Model.NetworkChecking.HttpRequestErrors;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
+import com.tz.sanga.moviestore.Model.NetworkChecking.HttpRequestErrors;
 import com.tz.sanga.moviestore.Model.NetworkChecking.NoConnectivityException;
 
 import java.util.List;
