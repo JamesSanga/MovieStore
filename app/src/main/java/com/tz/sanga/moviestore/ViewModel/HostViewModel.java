@@ -6,11 +6,11 @@ import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.tz.sanga.moviestore.BuildConfig;
-import com.tz.sanga.moviestore.Fragments.Host.HostView;
 import com.tz.sanga.moviestore.Model.API.Connector;
 import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
+import com.tz.sanga.moviestore.Presenters.Host.HostView;
 
 import java.util.List;
 
