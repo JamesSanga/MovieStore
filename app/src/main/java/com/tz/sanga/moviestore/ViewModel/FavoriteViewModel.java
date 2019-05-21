@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
-import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
+import com.tz.sanga.moviestore.Database.Local.Favorite;
 import com.tz.sanga.moviestore.Repositories.FavoriteRepository;
 
 import java.util.List;
@@ -13,8 +13,8 @@ import java.util.List;
 public class FavoriteViewModel extends AndroidViewModel {
 
     private FavoriteRepository favoriteRepository;
-    private LiveData<List<FavoriteNote>> allFavorites;
-   // private LiveData<List<FavoriteNote>> Id;
+    private LiveData<List<Favorite>> allFavorites;
+   // private LiveData<List<Favorite>> Id;
 
     public FavoriteViewModel(@NonNull Application application) {
         super(application);
@@ -22,27 +22,27 @@ public class FavoriteViewModel extends AndroidViewModel {
         allFavorites = favoriteRepository.getAllFavorites();
        // Id = favoriteRepository.getId();
     }
-    public void insert(FavoriteNote favoriteNote){
-        favoriteRepository.insert(favoriteNote);
+    public void insert(Favorite favorite){
+        favoriteRepository.insert(favorite);
     }
 
-    public void update(FavoriteNote favoriteNote){
-        favoriteRepository.update(favoriteNote);
+    public void update(Favorite favorite){
+        favoriteRepository.update(favorite);
     }
 
-    public void delete(FavoriteNote favoriteNote){
-        favoriteRepository.delete(favoriteNote);
+    public void delete(Favorite favorite){
+        favoriteRepository.delete(favorite);
     }
 
     public void deleteAll(){
         favoriteRepository.deleteAllFavorites();
     }
 
-//    public LiveData<List<FavoriteNote>>getId(){
+//    public LiveData<List<Favorite>>getId(){
 //        return Id;
 //    }
 
-    public LiveData<List<FavoriteNote>>getAllFavorites(){
+    public LiveData<List<Favorite>>getAllFavorites(){
         return allFavorites;
     }
 }

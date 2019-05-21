@@ -5,32 +5,30 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.tz.sanga.moviestore.Database.Local.Favorite;
 import com.tz.sanga.moviestore.Database.Local.FavoriteDao;
 import com.tz.sanga.moviestore.Database.Local.FavoriteDatabase;
-import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
 
 import java.util.List;
 
 public class FavoriteRepository {
     private FavoriteDao favoriteDao;
-    private LiveData<List<FavoriteNote>>allFavorites;
-    //private LiveData<List<FavoriteNote>>Id;
+    private LiveData<List<Favorite>>allFavorites;
 
     public FavoriteRepository(Context application){
         FavoriteDatabase favoriteDatabase = FavoriteDatabase.getInstance(application);
         favoriteDao = favoriteDatabase.favoriteDao();
         allFavorites = favoriteDao.getAllFavorites();
-        //Id = favoriteDao.getId(path);
     }
 
-    public void insert(FavoriteNote favoriteNote){
-        new FavoriteRepository.InsertFavoriteAsyncTask(favoriteDao).execute(favoriteNote);
+    public void insert(Favorite favorite){
+        new FavoriteRepository.InsertFavoriteAsyncTask(favoriteDao).execute(favorite);
     }
-    public void update(FavoriteNote favoriteNote){
-        new FavoriteRepository.UpdateFavoriteAsyncTask(favoriteDao).execute(favoriteNote);
+    public void update(Favorite favorite){
+        new FavoriteRepository.UpdateFavoriteAsyncTask(favoriteDao).execute(favorite);
     }
-    public void delete(FavoriteNote favoriteNote){
-        new FavoriteRepository.DeleteFavoriteAsyncTask(favoriteDao).execute(favoriteNote);
+    public void delete(Favorite favorite){
+        new FavoriteRepository.DeleteFavoriteAsyncTask(favoriteDao).execute(favorite);
     }
     public void deleteAllFavorites(){
         new FavoriteRepository.DeleteAllFavoriteAsyncTask(favoriteDao).execute();
@@ -40,14 +38,14 @@ public class FavoriteRepository {
         return favoriteDao.getPath(path);
     }
 
-    public LiveData<List<FavoriteNote>>getAllFavorites(){
+    public LiveData<List<Favorite>>getAllFavorites(){
         return allFavorites;
     }
-//    public LiveData<List<FavoriteNote>>getId(){
-//        return Id;
-//    }
+    public int deleteByPath(String path){
+        return favoriteDao.deleteByPath(path);
+    }
 
-    private static class InsertFavoriteAsyncTask extends AsyncTask<FavoriteNote, Void, Void> {
+    private static class InsertFavoriteAsyncTask extends AsyncTask<Favorite, Void, Void> {
         private FavoriteDao favoriteDao;
 
         public InsertFavoriteAsyncTask(FavoriteDao favoriteDao) {
@@ -55,14 +53,14 @@ public class FavoriteRepository {
         }
 
         @Override
-        protected Void doInBackground(FavoriteNote... favoriteNotes) {
-            favoriteDao.insert(favoriteNotes[0]);
+        protected Void doInBackground(Favorite... favorites) {
+            favoriteDao.insert(favorites[0]);
             return null;
         }
     }
 
 
-    private static class UpdateFavoriteAsyncTask extends AsyncTask<FavoriteNote, Void, Void>{
+    private static class UpdateFavoriteAsyncTask extends AsyncTask<Favorite, Void, Void>{
         private FavoriteDao favoriteDao;
 
         public UpdateFavoriteAsyncTask(FavoriteDao favoriteDao) {
@@ -70,13 +68,13 @@ public class FavoriteRepository {
         }
 
         @Override
-        protected Void doInBackground(FavoriteNote... favoriteNotes) {
-            favoriteDao.update(favoriteNotes[0]);
+        protected Void doInBackground(Favorite... favorites) {
+            favoriteDao.update(favorites[0]);
             return null;
         }
     }
 
-    private static class DeleteFavoriteAsyncTask extends AsyncTask<FavoriteNote, Void, Void>{
+    private static class DeleteFavoriteAsyncTask extends AsyncTask<Favorite, Void, Void>{
         private FavoriteDao favoriteDao;
 
         public DeleteFavoriteAsyncTask(FavoriteDao favoriteDao) {
@@ -84,8 +82,8 @@ public class FavoriteRepository {
         }
 
         @Override
-        protected Void doInBackground(FavoriteNote... favoriteNotes) {
-            favoriteDao.delete(favoriteNotes[0]);
+        protected Void doInBackground(Favorite... favorites) {
+            favoriteDao.delete(favorites[0]);
             return null;
         }
     }
