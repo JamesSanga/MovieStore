@@ -16,7 +16,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.tz.sanga.moviestore.Constants;
-import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
+import com.tz.sanga.moviestore.Database.Local.Favorite;
 import com.tz.sanga.moviestore.R;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHolder>{
     private static final String TAG = "TAG";
     private Context context;
-    private List<FavoriteNote> movieObjects= new ArrayList<>();
+    private List<Favorite> movieObjects= new ArrayList<>();
     private dataListener listener;
     private favoriteOnLongClickListener favoriteListener;
 
@@ -49,11 +49,11 @@ public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final MyHolder myHolder = (MyHolder)viewHolder;
-        myHolder.favoriteNote = movieObjects.get(i);
-        myHolder.textView.setText(myHolder.favoriteNote.getTitle());
+        myHolder.favorite = movieObjects.get(i);
+        myHolder.textView.setText(myHolder.favorite.getTitle());
 
         Glide.with(context)
-                .load(Constants.getImageUrl() +myHolder.favoriteNote.getPath())
+                .load(Constants.getImageUrl() +myHolder.favorite.getPath())
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -78,7 +78,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHold
     }
 
 
-    public void setFavoriteList (List<FavoriteNote>movieObjects) {
+    public void setFavoriteList (List<Favorite>movieObjects) {
         this.movieObjects = movieObjects;
         notifyDataSetChanged();
     }
@@ -88,14 +88,14 @@ public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHold
     }
 
     public interface favoriteOnLongClickListener{
-        void onLongClickFavorite(FavoriteNote favoriteNote, String title);
+        void onLongClickFavorite(Favorite favorite, String title);
     }
 
     class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         @BindView(R.id.view_text) TextView textView;
         @BindView(R.id.img_view) ImageView imageView;
         @BindView(R.id.loading_favorite_poster) ProgressBar progressBar;
-        private FavoriteNote favoriteNote;
+        private Favorite favorite;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
@@ -106,13 +106,13 @@ public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHold
 
         @Override
         public void onClick(View v) {
-            listener.onClickFavorite(favoriteNote.getPath());
-            Log.d(TAG, "onClick: " + favoriteNote.getId());
+            listener.onClickFavorite(favorite.getPath());
+            Log.d(TAG, "onClick: " + favorite.getId());
         }
         @Override
         public boolean onLongClick(View v) {
             int position = getAdapterPosition();
-            favoriteListener.onLongClickFavorite(movieObjects.get(position), favoriteNote.getTitle());
+            favoriteListener.onLongClickFavorite(movieObjects.get(position), favorite.getTitle());
             return false;
         }
     }
