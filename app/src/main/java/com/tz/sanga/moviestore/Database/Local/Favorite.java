@@ -5,7 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "favorite")
-public class FavoriteNote {
+public class Favorite {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -17,8 +17,7 @@ public class FavoriteNote {
     @ColumnInfo(name = "overview")
     private String overview;
 
-    public FavoriteNote(String title, String path, String overview) {
-        this.id = id;
+    public Favorite(String title, String path, String overview) {
         this.title = title;
         this.path = path;
         this.overview = overview;
