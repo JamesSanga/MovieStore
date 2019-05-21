@@ -29,7 +29,7 @@ import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.tz.sanga.moviestore.Adapters.FavoriteAdapter;
 import com.tz.sanga.moviestore.Constants;
-import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
+import com.tz.sanga.moviestore.Database.Local.Favorite;
 import com.tz.sanga.moviestore.R;
 import com.tz.sanga.moviestore.ViewModel.FavoriteViewModel;
 
@@ -101,12 +101,12 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     }
 
     private void createViewModel(){
-        favoriteViewModel.getAllFavorites().observe(this, new Observer<List<FavoriteNote>>()
+        favoriteViewModel.getAllFavorites().observe(this, new Observer<List<Favorite>>()
         {
             @Override
-            public void onChanged(@Nullable List<FavoriteNote> favoriteNotes) {
-               adapter.setFavoriteList(favoriteNotes);
-               if (favoriteNotes.size() >= 1){
+            public void onChanged(@Nullable List<Favorite> favorites) {
+               adapter.setFavoriteList(favorites);
+               if (favorites.size() >= 1){
                    emptyTextView.setVisibility(View.GONE);
                }else emptyTextView.setVisibility(View.VISIBLE);
             }
@@ -144,13 +144,13 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
         mDialog.show();
     }
 
-    private void warnUser(final FavoriteNote favoriteNote, String title){
+    private void warnUser(final Favorite favorite, String title){
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setMessage( title +" will be deleted");
         alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                favoriteViewModel.delete(favoriteNote);
+                favoriteViewModel.delete(favorite);
             }
         });
 
@@ -195,7 +195,7 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     }
 
     @Override
-    public void onLongClickFavorite(FavoriteNote favoriteNote, String title) {
-        warnUser(favoriteNote, title);
+    public void onLongClickFavorite(Favorite favorite, String title) {
+        warnUser(favorite, title);
     }
 }
