@@ -2,6 +2,8 @@ package com.tz.sanga.moviestore.UI;
 
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -30,7 +32,7 @@ import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 import com.tz.sanga.moviestore.Adapters.RelatedAdapter;
 import com.tz.sanga.moviestore.Adapters.TrailerAdapter;
 import com.tz.sanga.moviestore.Constants;
-import com.tz.sanga.moviestore.Database.Local.FavoriteNote;
+import com.tz.sanga.moviestore.Database.Local.Favorite;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.Trailer;
 import com.tz.sanga.moviestore.Presenters.First.FirstPresenter;
@@ -60,7 +62,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     @BindView(R.id.movie_title) TextView textMove;
     @BindView(R.id.movie_date)TextView textDate;
     @BindView(R.id.recycler_view_trailer)RecyclerView recyclerView;
-
+    private AnimatedImageDrawable animatedImageDrawable;
     private static final String TAG = "TAG";
     private FavoriteViewModel favoriteViewModel;
     private int moveId;
@@ -69,7 +71,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     LinearLayoutManager layoutManager;
     private ActionBar actionBar;
     FirstPresenter presenter;
-    private FavoriteNote favoriteNote;
+    private Favorite favorite;
 
     public FirstFragment() {
         // Required empty public constructor
@@ -140,7 +142,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     }
     private void initialize(){
         Constants.favoriteRepository = new FavoriteRepository(getContext());
-        favoriteNote = new FavoriteNote(title, path, overview);
+        favorite = new Favorite(title, path, overview);
         favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
         adapter = new RelatedAdapter(getContext(),this);
         layoutManager = new LinearLayoutManager(getContext(),
@@ -148,6 +150,10 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
         multiSnapRecyclerView.setLayoutManager(layoutManager);
         multiSnapRecyclerView.setItemAnimator(new DefaultItemAnimator());
         multiSnapRecyclerView.setAdapter(adapter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            animatedImageDrawable = (AnimatedImageDrawable)imageView.getDrawable();
+            animatedImageDrawable.start();
+        }
     }
 
     private void saveMovieDetails() {
@@ -169,14 +175,18 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable>
                             target, boolean isFirstResource) {
-                        progressBar.setVisibility(View.GONE);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            animatedImageDrawable.stop();
+                        }
                         return false;
                     }
                     @Override
                     public boolean onResourceReady(GlideDrawable resource, String model,Target
                             <GlideDrawable> target,boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
-                        progressBar.setVisibility(View.GONE);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            animatedImageDrawable.stop();
+                        }
                         return false;
                     }
                 })
@@ -197,7 +207,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     }
 
     public void addToSqlDB(final View view) {
-       favoriteViewModel.insert(favoriteNote);
+       favoriteViewModel.insert(favorite);
            Snackbar.make(view, title + " added to favorite", Snackbar.LENGTH_LONG)
                    .setAction("REMOVE", new View.OnClickListener() {
                @Override
@@ -206,14 +216,11 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     }
 
     public void deleteFavorite(View view){
-//        favoriteViewModel.getId().observe(this, new Observer<List<FavoriteNote>>() {
-//            @Override
-//            public void onChanged(@Nullable List<FavoriteNote> favoriteNotes) {
-//                Log.d(TAG, "onChanged: "+ favoriteNotes.get(getId()));
-//            }
-//        });
-//        favoriteViewModel.delete(favoriteNote);
-//            Snackbar.make(view, "Deleted successful", Snackbar.LENGTH_LONG).show();
+
+        if ( Constants.favoriteRepository.deleteByPath(path) >= 1)
+            Snackbar.make(view, title + " removed", Snackbar.LENGTH_LONG).show();
+        else
+            Snackbar.make(view, title + " not removed", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -226,6 +233,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
 
     @Override
     public void showResults(List<Movie> moveData) {
+        progressBar.setVisibility(View.GONE);
         if (moveData.size()<1){
             textView1.setVisibility(View.GONE);
             multiSnapRecyclerView.setVisibility(View.GONE);
