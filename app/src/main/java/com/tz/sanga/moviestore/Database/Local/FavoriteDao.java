@@ -13,22 +13,22 @@ import java.util.List;
 public interface FavoriteDao {
 
     @Insert
-    void insert(FavoriteNote favoriteNote);
+    void insert(Favorite favorite);
 
     @Update
-    void update(FavoriteNote favoriteNote);
+    void update(Favorite favorite);
 
     @Delete
-    void delete(FavoriteNote favoriteNote);
+    void delete(Favorite favorite);
 
-    @Query("DELETE FROM favorite")
+    @Query("DELETE FROM Favorite")
     void deleteAllFavorites();
 
-    @Query("SELECT * FROM favorite ORDER BY id DESC")
-    LiveData<List<FavoriteNote>> getAllFavorites();
+    @Query("SELECT * FROM Favorite ORDER BY id DESC")
+    LiveData<List<Favorite>> getAllFavorites();
 
-    @Query("SELECT id FROM favorite WHERE path =:path")
-    LiveData<List<FavoriteNote>> getId(String path);
+    @Query("DELETE FROM Favorite WHERE path =:path")
+    int deleteByPath(String path);
 
     @Query("SELECT EXISTS(SELECT 1 FROM Favorite WHERE path =:path)")
     boolean getPath(String path);
