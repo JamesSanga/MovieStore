@@ -1,19 +1,20 @@
 package com.tz.sanga.moviestore.Utils;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 public abstract class MoviesScrollListener extends RecyclerView.OnScrollListener {
 
-    LinearLayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
 
 
-    public MoviesScrollListener(LinearLayoutManager layoutManager){
+    protected MoviesScrollListener(LinearLayoutManager layoutManager){
         this.layoutManager = layoutManager;
     }
 
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy){
         super.onScrolled(recyclerView, dx, dy);
 
         int visibleItemCount = layoutManager.getChildCount();

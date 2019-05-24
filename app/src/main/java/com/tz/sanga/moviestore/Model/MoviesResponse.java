@@ -5,13 +5,13 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class MoviesResponse implements Parcelable {
     @SerializedName("page")
     private int page;
     @SerializedName("results")
-    private List<Movie>results;
+    private ArrayList<Movie> results;
     @SerializedName("total_results")
     private int totalResults;
     @SerializedName("total_pages")
@@ -49,11 +49,11 @@ public class MoviesResponse implements Parcelable {
         this.page = page;
     }
 
-    public List<Movie> getResults() {
+    public ArrayList<Movie> getResults() {
         return results;
     }
 
-    public void setResults(List<Movie> results) {
+    public void setResults(ArrayList<Movie> results) {
         this.results = results;
     }
 
