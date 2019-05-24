@@ -28,8 +28,6 @@ import butterknife.ButterKnife;
 
 public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int ITEM = 0;
-    private static final int LOADING = 1;
     private List<Movie> movieResults;
     private Context context;
     private ReloadListener listener;
@@ -49,26 +47,22 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Movie result = movieResults.get(position);
-        switch (getItemViewType(position)){
-            case ITEM:
-                // final MovieVH movieVH = (MovieVH) holder;
                 final MovieVH movieVH = (MovieVH) holder;
                 movieVH.movie = getItem(position);
                 movieVH.textViewTitle.setText(result.getTitle());
-                movieVH.textViewDate.setText(result.getReleaseDate());
-                movieVH.textViewVoteAverage.setText(String.valueOf(result.getVoteAverage()));
-
                 //load images by glide library
                 Glide.with(context).load(Constants.getImageUrl() + result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            public boolean onException(Exception e, String model, Target<GlideDrawable>
+                                    target, boolean isFirstResource) {
                                 movieVH.progressBar.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target
+                            <GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                                 //image id ready, hide progress bar
                                 movieVH.progressBar.setVisibility(View.GONE);
                                 return false; // return false for glide to handle every thing else
@@ -78,23 +72,10 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         .centerCrop()
                         .crossFade()
                         .into(movieVH.imageView);
-                break;
-
-            case LOADING:
-                //do nothing
-                break;
-        }
-
-
-    }
+       }
 
     @Override
     public int getItemCount() {
-        return movieResults == null ? 0 : movieResults.size();
-    }
-
-    @Override
-    public int getItemViewType(int position){
         return movieResults.size();
     }
 
@@ -117,10 +98,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @BindView(R.id.movie_poster)ImageView imageView;
         @BindView(R.id.movie_progress)ProgressBar progressBar;
         @BindView(R.id.movie_title)TextView textViewTitle;
-        @BindView(R.id.release_date)TextView textViewDate;
-        @BindView(R.id.vote_average)TextView textViewVoteAverage;
         private Movie movie;
-
 
         public MovieVH(final View itemView) {
             super(itemView);
@@ -137,7 +115,8 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             bundle.putInt("moveId", movie.getId());
             bundle.putString("date", movie.getReleaseDate());
             if (movieResults.size() > 0){movieResults.clear();}
-            listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(), movie.getOriginalTile(), movie.getReleaseDate());
+            listener.onReload(movie.getId(), movie.getPosterPath(), movie.getOverview(),
+                    movie.getOriginalTile(), movie.getReleaseDate());
         }
     }
 
