@@ -31,6 +31,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHold
     private List<Favorite> movieObjects= new ArrayList<>();
     private dataListener listener;
     private favoriteOnLongClickListener favoriteListener;
+    private MyHolder myHolder;
 
     public FavoriteAdapter(Context context, dataListener listener, favoriteOnLongClickListener favoriteListener) {
         this.context = context;
@@ -38,11 +39,15 @@ public class FavoriteAdapter extends RecyclerView.Adapter <RecyclerView.ViewHold
         this.favoriteListener = favoriteListener;
     }
 
+    public FavoriteAdapter(MyHolder myHolder) {
+        this.myHolder = myHolder;
+    }
+
     @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.display_view, viewGroup, false);
-        MyHolder myHolder = new MyHolder(view);
+        myHolder = new MyHolder(view);
         return myHolder;
     }
 

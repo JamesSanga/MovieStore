@@ -48,7 +48,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class FirstFragment extends Fragment implements FirstView, RelatedAdapter.ReloadListener {
+public class FirstFragment extends Fragment implements
+        FirstView, RelatedAdapter.ReloadListener {
+
     @BindView(R.id.relatedMovies)
     MultiSnapRecyclerView multiSnapRecyclerView;
     @BindView(R.id.load_similar_movies)
@@ -84,7 +86,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_first, container, false);
-        presenter = new FirstPresenter(this, moveId);
+        presenter = new FirstPresenter(getContext(),this, moveId);
         ButterKnife.bind(this, view);
         presenter.getData();
         saveMovieDetails();
@@ -96,9 +98,12 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     }
 
     private void setToolBar() {
-        actionBar = ((MainActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.move_details);
+        if (getActivity() != null)
+            actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.move_details);
+        }
     }
 
     @Override
@@ -111,6 +116,7 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if(id == android.R.id.home ){
+            if (getActivity() != null)
             getActivity().onBackPressed();
             return true;
         }else
@@ -225,11 +231,6 @@ public class FirstFragment extends Fragment implements FirstView, RelatedAdapter
 
     @Override
     public void showLoading() {progressBar.setVisibility(View.VISIBLE);}
-
-    @Override
-    public void hideLoading() {
-        progressBar.setVisibility(View.INVISIBLE);
-    }
 
     @Override
     public void showResults(List<Movie> moveData) {

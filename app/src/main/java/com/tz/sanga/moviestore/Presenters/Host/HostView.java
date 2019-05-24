@@ -10,5 +10,4 @@ public interface HostView {
     void showResults(List<Movie> moveData);
     void onErrorLoading(String message);
     void onLoadingFirstPage(boolean firstPage);
-    void hideLoading(boolean b);
 }

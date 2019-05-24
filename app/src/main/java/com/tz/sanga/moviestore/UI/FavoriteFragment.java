@@ -46,6 +46,7 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     private FavoriteViewModel favoriteViewModel;
     private AlertDialog.Builder mDialog;
     private FavoriteAdapter adapter;
+    private  ActionBar actionBar;
 
     public FavoriteFragment() {
         // Required empty public constructor
@@ -69,6 +70,7 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home){
+            if (getActivity() != null)
             getActivity().onBackPressed();
             return true;
         }else if(id == R.id.action_delete_all){
@@ -84,9 +86,12 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
     }
 
     private void setToolBar() {
-        ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.favorite_movies);
+        if (getActivity() != null)
+        actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        if (actionBar !=null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.favorite_movies);
+        }
     }
 
     private void initialize(){
@@ -106,7 +111,7 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
             @Override
             public void onChanged(@Nullable List<Favorite> favorites) {
                adapter.setFavoriteList(favorites);
-               if (favorites.size() >= 1){
+               if (favorites != null){
                    emptyTextView.setVisibility(View.GONE);
                }else emptyTextView.setVisibility(View.VISIBLE);
             }

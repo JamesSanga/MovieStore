@@ -2,6 +2,7 @@ package com.tz.sanga.moviestore.Presenters.First;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
@@ -24,15 +25,13 @@ public class FirstPresenter {
     private Service service;
     private int moveId;
     private Context context;
+    private List<Trailer> trailerList;
 
 
-    public FirstPresenter(FirstView firstView, int moveId) {
+    public FirstPresenter(Context context, FirstView firstView, int moveId) {
+        this.context = context;
         this.firstView = firstView;
         this.moveId = moveId;
-    }
-
-    public FirstPresenter(Context context) {
-        this.context = context;
     }
 
     public void updateMoveId(int moveId){
@@ -44,13 +43,15 @@ public class FirstPresenter {
         service = Connector.getConnector(context).create(Service.class);
        callSimilarMoviesApi().enqueue(new Callback<MoviesResponse>() {
            @Override
-           public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+           public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                List<Movie>results = fetchResults(response);
                firstView.showResults(results);
            }
 
            @Override
-           public void onFailure(Call<MoviesResponse> call, Throwable t) {firstView.onErrorLoading(t.getLocalizedMessage());}
+           public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
+               firstView.onErrorLoading(t.getLocalizedMessage());
+           }
        });
     }
 
@@ -72,13 +73,14 @@ public class FirstPresenter {
         Call<TrailerResponse> call = service.getTrailer(moveId, BuildConfig.THE_MOVIE_DB_API_TOKEN);
         call.enqueue(new Callback<TrailerResponse>() {
             @Override
-            public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
-                List<Trailer> trailerList = response.body().getResults();
+            public void onResponse(@NonNull Call<TrailerResponse> call, @NonNull Response<TrailerResponse> response) {
+                if (response.body() != null)
+                trailerList = response.body().getResults();
                 firstView.trailerMoviesResults(trailerList);
             }
 
             @Override
-            public void onFailure(Call<TrailerResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<TrailerResponse> call, @NonNull Throwable t) {
                 firstView.onErrorLoading(t.getLocalizedMessage());
             }
         });

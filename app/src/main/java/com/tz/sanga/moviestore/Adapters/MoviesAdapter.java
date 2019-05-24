@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.navigation.Navigation;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -23,7 +25,6 @@ import com.tz.sanga.moviestore.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.navigation.Navigation;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -40,12 +41,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         movieResults = new ArrayList<>();
         inflater = LayoutInflater.from(context);
     }
-
-    public List<Movie> getMovieResults() {
-        return movieResults;
-    }
-
-    public void setMovies(List<Movie> movieResults){this.movieResults = movieResults; }
 
     @NonNull
     @Override
@@ -82,7 +77,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 movieVH.textViewTitle.setText(movieVH.movie.getTitle());
                 movieVH.textViewDate.setText(movieVH.movie.getReleaseDate().substring(0, 4)//year only
                                 + " | "+ movieVH.movie.getOriginalLanguage().toUpperCase());
-                movieVH.textViewVoteAverage.setText("Vote average" + ": "+String.valueOf(movieVH.movie.getVoteAverage()));
+                movieVH.textViewVoteAverage.setText("Vote average" + ": "+ movieVH.movie.getVoteAverage());
 
                 //load images by glide library
                 Glide .with(context).load(Constants.getImageUrl() + movieVH.movie.getPosterPath())

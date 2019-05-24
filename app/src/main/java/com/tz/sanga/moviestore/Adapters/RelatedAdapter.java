@@ -33,7 +33,6 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<Movie> movieResults;
     private Context context;
     private ReloadListener listener;
-    private boolean isLoadingAdded = false;
 
     public RelatedAdapter(Context context, ReloadListener listener) {
         this.context = context;
@@ -41,33 +40,13 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         movieResults = new ArrayList<>();
     }
 
-    public List<Movie> getMovieResults() {
-        return movieResults;
-    }
-
-    public void setMovies(List<Movie> movieResults){this.movieResults = movieResults; }
-
     @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder = null;
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-
-        if (viewType == ITEM){
-            viewHolder = getViewHolder(parent, inflater);
-        }
-        return viewHolder;
+        View view = LayoutInflater.from(context).inflate(R.layout. related_layout, parent, false);
+        return new MovieVH(view);
     }
 
-    @NonNull
-    private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater){
-        RecyclerView.ViewHolder viewHolder;
-        View v1 = inflater.inflate(R.layout. related_layout, parent, false);
-        viewHolder = new RelatedAdapter.MovieVH(v1);
-        return viewHolder;
-    }
-
-    @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Movie result = movieResults.get(position);
         switch (getItemViewType(position)){
@@ -116,7 +95,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position){
-        return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+        return movieResults.size();
     }
 
     public void add(Movie r){

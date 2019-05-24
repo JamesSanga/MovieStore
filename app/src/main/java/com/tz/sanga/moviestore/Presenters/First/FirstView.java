@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface FirstView {
     void showLoading();
-    void hideLoading();
     void showResults(List<Movie> moveData);
     void onErrorLoading(String message);
     void trailerMoviesResults(List<Trailer>trailers);

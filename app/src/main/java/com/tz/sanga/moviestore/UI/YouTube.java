@@ -25,6 +25,7 @@ import static android.support.constraint.Constraints.TAG;
 public class YouTube extends Fragment {
     @BindView(R.id.youtube_video) YouTubePlayerView playerView;
     private String name;
+    private ActionBar actionBar;
 
     public YouTube() {
         // Required empty public constructor
@@ -43,15 +44,19 @@ public class YouTube extends Fragment {
     }
 
     private void setToolBar() {
-        ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(name);
+        if (getActivity() != null)
+        actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        if (actionBar !=null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(name);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home){
+            if (getActivity() != null)
             getActivity().onBackPressed();
             return true;
         }else

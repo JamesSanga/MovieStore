@@ -1,6 +1,7 @@
 package com.tz.sanga.moviestore.Presenters.Host;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.tz.sanga.moviestore.BuildConfig;
 import com.tz.sanga.moviestore.Model.API.Connector;
@@ -8,7 +9,6 @@ import com.tz.sanga.moviestore.Model.API.Service;
 import com.tz.sanga.moviestore.Model.Movie;
 import com.tz.sanga.moviestore.Model.MoviesResponse;
 import com.tz.sanga.moviestore.Model.NetworkChecking.HttpRequestErrors;
-import com.tz.sanga.moviestore.Model.NetworkChecking.NoConnectivityException;
 
 import java.util.List;
 
@@ -28,10 +28,8 @@ public class HostPresenter {
     private int movePreference;
     private Context context;
 
-    public HostPresenter(Context context) {
+    public HostPresenter(Context context, HostView hostView, int movePreference) {
         this.context = context;
-    }
-    public HostPresenter(HostView hostView, int movePreference) {
         this.hostView = hostView;
         this.movePreference = movePreference;
     }
@@ -41,7 +39,7 @@ public class HostPresenter {
         movieService= Connector.getConnector(context).create(Service.class);
             callMoviesApi().enqueue(new Callback<MoviesResponse>() {
                 @Override
-                public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                     hostView.hideLoading();
                     if (response.isSuccessful() && response.body() != null) {
                         List<Movie> results = fetchResults(response);
@@ -58,40 +56,43 @@ public class HostPresenter {
                 }
 
                 @Override
-                public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {
                     hostView.hideLoading();
                     hostView.onErrorLoading(t.getLocalizedMessage());
-                    if (t instanceof NoConnectivityException)
-                    {
-                        hostView.onErrorLoading(t.getMessage());
-                    }
+                    hostView.onErrorLoading(t.getMessage());
+//                    if (t instanceof NoConnectivityException)
+//                    {
+//                        hostView.onErrorLoading(t.getMessage());
+//                    }
                 }
             });
     }
 
 
-    public void loadNext(){
-        movieService= Connector.getConnector(context).create(Service.class);
-        Call<MoviesResponse> call = movieService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
-        call.enqueue(new Callback<MoviesResponse>() {
-            @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                hostView.hideLoading(isLoading = false);
-                List<Movie> results = response.body().getResults();
-                hostView.showResults(results);
-            }
-
-            @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-//                if (t instanceof NoConnectivityException){
-//                }
-            }
-        });
-    }
+//    public void loadNext(){
+//        movieService= Connector.getConnector(context).create(Service.class);
+//        Call<MoviesResponse> call = movieService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
+//        call.enqueue(new Callback<MoviesResponse>() {
+//            @Override
+//            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+//                hostView.hideLoading(isLoading = false);
+//                List<Movie> results = response.body().getResults();
+//                hostView.showResults(results);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+////                if (t instanceof NoConnectivityException){
+////                }
+//            }
+//        });
+//    }
 
     private List<Movie> fetchResults(Response<MoviesResponse> response){
         MoviesResponse movies = response.body();
+        if (movies != null)
         return movies.getResults();
+        return null;
     }
 
     private Call<MoviesResponse> callMoviesApi() {

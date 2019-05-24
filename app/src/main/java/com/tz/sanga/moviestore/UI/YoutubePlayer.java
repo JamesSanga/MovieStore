@@ -31,8 +31,8 @@ public class YoutubePlayer extends YouTubeBaseActivity {
         setContentView(R.layout.activity_youtube_player);
         ButterKnife.bind(this);
 
-
         //getting extras
+        if (getIntent().getExtras() != null)
         VideoKey = getIntent().getExtras().getString("key");
         trailerName = getIntent().getExtras().getString("name");
         exitTrailerPage();

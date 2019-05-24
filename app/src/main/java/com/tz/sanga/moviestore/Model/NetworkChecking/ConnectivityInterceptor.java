@@ -1,6 +1,8 @@
 package com.tz.sanga.moviestore.Model.NetworkChecking;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -15,8 +17,9 @@ public class ConnectivityInterceptor implements Interceptor {
         this.context = context;
     }
 
+    @NonNull
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(@NonNull Chain chain) throws IOException {
         if (!NetworkUtil.isOnline(context)) {
             throw new NoConnectivityException();
         }

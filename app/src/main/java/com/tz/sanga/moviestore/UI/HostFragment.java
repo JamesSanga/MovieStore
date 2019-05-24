@@ -1,8 +1,6 @@
 package com.tz.sanga.moviestore.UI;
 
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -10,7 +8,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -41,7 +38,6 @@ import com.tz.sanga.moviestore.Presenters.Host.HostPresenter;
 import com.tz.sanga.moviestore.Presenters.Host.HostView;
 import com.tz.sanga.moviestore.R;
 import com.tz.sanga.moviestore.Utils.MoviesScrollListener;
-import com.tz.sanga.moviestore.ViewModel.HostViewModel;
 
 import java.util.List;
 import java.util.Locale;
@@ -78,6 +74,8 @@ public class HostFragment extends Fragment implements HostView{
     private int currentPage = PAGE_START;
     HostPresenter presenter;
     int number;
+    private  ActionBar toolbar;
+    private  List<Movie> results;
 
     public HostFragment() {
         // Required empty public constructor
@@ -90,7 +88,8 @@ public class HostFragment extends Fragment implements HostView{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_host, container, false);
         ButterKnife.bind(this, view);
-        ((MovieStore)getActivity().getApplication()).getMyApplicationComponents()
+        if (getActivity() != null)
+        ((MovieStore)(getActivity()).getApplication()).getMyApplicationComponents()
                 .inject(this);
         bundle = new Bundle();
         setToolBar();
@@ -103,7 +102,8 @@ public class HostFragment extends Fragment implements HostView{
 
     private void initialize() {
         number = preferences.getInt("No", 0);
-        presenter = new HostPresenter(this, number);
+        presenter = new HostPresenter(getContext(),this, number);
+        if (getContext() != null)
         mBuilder = new AlertDialog.Builder(getContext());
         adapter = new MoviesAdapter(getContext());
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,
@@ -115,9 +115,12 @@ public class HostFragment extends Fragment implements HostView{
     }
 
     private void setToolBar() {
-        ActionBar toolbar = ((MainActivity)getActivity()).getSupportActionBar();
-        toolbar.setTitle(R.string.app_name);
-        toolbar.setDisplayHomeAsUpEnabled(false);
+        if (getActivity() != null)
+            toolbar = ((MainActivity)getActivity()).getSupportActionBar();
+        if (toolbar != null){
+            toolbar.setTitle(R.string.app_name);
+            toolbar.setDisplayHomeAsUpEnabled(false);
+           }
     }
 
     @Override
@@ -130,24 +133,12 @@ public class HostFragment extends Fragment implements HostView{
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             showChangeMoviesOptions();
-            return true;
         }
         if (id == R.id.goToMvvm){
             Navigation.findNavController(layout).navigate(
                     R.id.action_blankFragment_to_blankFragment2, bundle);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void getData(){
-        HostViewModel viewModel = ViewModelProviders.of(this).get(HostViewModel.class);
-        viewModel.getMovies(getContext()).observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(@Nullable List<Movie> movies) {
-                adapter.addAll(movies);
-                adapter.notifyDataSetChanged();
-            }
-        });
     }
 
     private void loadNextPage(){
@@ -157,10 +148,11 @@ public class HostFragment extends Fragment implements HostView{
                 BuildConfig.THE_MOVIE_DB_API_TOKEN, currentPage);
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
-            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response){
+            public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response){
                 adapter.removeLoadingFooter();
                 isLoading = false;
-                List<Movie> results = response.body().getResults();
+                if (response.body() != null)
+                results = response.body().getResults();
                 adapter.addAll(results);
                 adapter.notifyDataSetChanged();
 
@@ -169,13 +161,13 @@ public class HostFragment extends Fragment implements HostView{
             }
 
             @Override
-            public void onFailure(Call<MoviesResponse> call, Throwable t) {}
+            public void onFailure(@NonNull Call<MoviesResponse> call, @NonNull Throwable t) {}
         });
     }
 
     private void refreshPage(){
-        refreshLayout.setColorScheme(R.color.black, R.color.colorAccent, R.color.colorPrimary,
-                R.color.lightGray);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent),
+                getResources().getColor(R.color.colorPrimary), getResources().getColor(R.color.lightGray));
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -208,9 +200,9 @@ public class HostFragment extends Fragment implements HostView{
         Locale.setDefault(locale);
         Configuration configuration = new Configuration();
         configuration.locale = locale;
-       getActivity().getBaseContext().getResources().updateConfiguration(configuration,getActivity()
-               .getBaseContext().getResources().getDisplayMetrics());
-
+        if (getActivity() != null)
+        getActivity().getBaseContext().getResources().updateConfiguration(configuration,getActivity()
+              .getBaseContext().getResources().getDisplayMetrics());
 //        save data to shared preferences
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("No", Integer.parseInt(i));
@@ -226,7 +218,6 @@ public class HostFragment extends Fragment implements HostView{
     public void hideLoading() {
         progressBar.setVisibility(View.GONE);
         refreshLayout.setRefreshing(false);
-       // adapter.removeLoadingFooter();
     }
 
     @Override
@@ -279,16 +270,4 @@ public class HostFragment extends Fragment implements HostView{
         }
     }
 
-    @Override
-    public void hideLoading(boolean b) {
-        if (b){ adapter.removeLoadingFooter();}
-        if (currentPage != TOTAL_PAGES)adapter.addLoadingFooter();
-        else isLastPage = true;
-    }
-
-    private void goToMVVM(String title, String posterPath, String overview) {
-        bundle.putString("title", title);
-        bundle.putString("path", posterPath);
-        bundle.putString("overview", overview);
-    }
 }
