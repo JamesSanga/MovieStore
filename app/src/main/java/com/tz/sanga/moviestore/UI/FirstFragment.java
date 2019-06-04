@@ -2,8 +2,6 @@ package com.tz.sanga.moviestore.UI;
 
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.drawable.AnimatedImageDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -64,7 +62,6 @@ public class FirstFragment extends Fragment implements
     @BindView(R.id.movie_title) TextView textMove;
     @BindView(R.id.movie_date)TextView textDate;
     @BindView(R.id.recycler_view_trailer)RecyclerView recyclerView;
-    private AnimatedImageDrawable animatedImageDrawable;
     private static final String TAG = "TAG";
     private FavoriteViewModel favoriteViewModel;
     private int moveId;
@@ -156,10 +153,6 @@ public class FirstFragment extends Fragment implements
         multiSnapRecyclerView.setLayoutManager(layoutManager);
         multiSnapRecyclerView.setItemAnimator(new DefaultItemAnimator());
         multiSnapRecyclerView.setAdapter(adapter);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            animatedImageDrawable = (AnimatedImageDrawable)imageView.getDrawable();
-            animatedImageDrawable.start();
-        }
     }
 
     private void saveMovieDetails() {
@@ -181,18 +174,12 @@ public class FirstFragment extends Fragment implements
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable>
                             target, boolean isFirstResource) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            animatedImageDrawable.stop();
-                        }
                         return false;
                     }
                     @Override
                     public boolean onResourceReady(GlideDrawable resource, String model,Target
                             <GlideDrawable> target,boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            animatedImageDrawable.stop();
-                        }
                         return false;
                     }
                 })
@@ -251,6 +238,7 @@ public class FirstFragment extends Fragment implements
         presenter.updateMoveId(moveId);
         presenter.getData();
         setView();
+        initialize();
         presenter.processTrailer();
     }
 
