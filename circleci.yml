@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/workspace
     docker:
-      - image: circleci/android:api-19
+      - image: circleci/android:api-19-alpha
 
     steps:
       - checkout
@@ -18,3 +18,5 @@ jobs:
           destination: reports
       - store_test_results:
           path: app/build/test-results
+
+
