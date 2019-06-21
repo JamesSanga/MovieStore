@@ -1,29 +1,21 @@
-version: 2
-jobs:
-  one:
-    steps:
-      - checkout
-      - run: echo "my first circle ci"
-      - run: mkdir -p C
-      - run: echo "Trying out my workspace">myworkspace/echo-output
-      - persist_to_workspace:
-          root: myworkspace
-          path:
-            -echo-output
-  two:
-    docker:
-      - image: circleci/android:API-19
-    steps:
-      - checkout
-      - run: echo "You go familiar"
-      - attach_workspace:
-          at: myworkspace
+#
+# Build configuration for Circle CI
+#
 
-workflows:
-  version: 2
-  one_and_two:
-    jobs:
-      - one
-      - two
-         require:
-           -one
+general:
+  artifacts:
+    - /home/ubuntu/your-app-name/app/build/outputs/apk/
+
+machine:
+  environment:
+    ANDROID_HOME: /usr/local/android-sdk-linux
+
+dependencies:
+  override:
+    - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-19.1.0,android-19,extra-google-m2repository,extra-google-google_play_services,extra-android-support
+    - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+
+test:
+  override:
+    - (./gradlew assemble):
+        timeout: 360
