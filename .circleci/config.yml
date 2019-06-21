@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  one:
+    steps:
+      - checkout
+      - run: echo "my first circle ci"
+      - run: mkdir -p C
+      - run: echo "Trying out my workspace">myworkspace/echo-output
+      - persist_to_workspace:
+          root: myworkspace
+          path:
+            -echo-output
+  two:
+    docker:
+      - image: circleci/android:API-19
+    steps:
+      - checkout
+      - run: echo "You go familiar"
+      - attach_workspace:
+          at: myworkspace
+
+workflows:
+  version: 2
+  one_and_two:
+    jobs:
+      - one
+      - two
+         require:
+           -one
