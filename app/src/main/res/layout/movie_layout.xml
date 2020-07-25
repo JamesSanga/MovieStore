@@ -2,11 +2,9 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:CardView="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="122dp"
-    android:layout_marginStart="2dp"
-    android:layout_marginEnd="2dp"
-    CardView:cardElevation="0dp"
-    CardView:cardMaxElevation="0dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="1dp"
+    CardView:cardCornerRadius="1dp"
     android:background="@color/white">
 
     <RelativeLayout
@@ -15,20 +13,19 @@
         <ImageView
             android:layout_width="85dp"
             android:scaleType="fitXY"
-            android:contentDescription="img_movie"
+            android:contentDescription="@string/app_name"
             android:background="@drawable/loading"
             android:layout_height="105dp"
             android:id="@+id/movie_poster"
             android:layout_margin="5dp"/>
-
 
         <ProgressBar
             android:id="@+id/movie_progress"
             style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginVertical="50dp"
-            android:layout_marginHorizontal="40dp"/>
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="40dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,7 +35,6 @@
             android:maxLength="15"
             android:clickable="true"
             android:focusable="true"
-            android:text="release date"
             android:id="@+id/release_date"
             android:textColor="@color/black"
             android:layout_alignParentEnd="true"
@@ -47,19 +43,18 @@
             android:layout_marginEnd="10dp"
             />
         <TextView
+            android:layout_below="@+id/release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:lines="1"
             android:clickable="true"
             android:focusable="true"
-            android:text="the vote average"
             android:id="@+id/vote_average"
             android:textColor="@color/black"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="90dp"
-            android:layout_marginEnd="5dp"
+            android:text="@string/app_name"
+            android:layout_marginTop="70dp"
             />
 
         <TextView
@@ -68,20 +63,10 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
             android:id="@+id/movie_title"
-            android:text="Movie title the vote average"
             android:textColor="@color/black"
             android:layout_marginTop="1dp"
             android:layout_marginStart="8dp"
             android:layout_toEndOf="@id/movie_poster"
             android:layout_toStartOf="@id/release_date"/>
-
-        <Button
-            android:id="@+id/line"
-            android:layout_marginTop="9dp"
-            android:background="@color/lightGray"
-            android:layout_below="@+id/vote_average"
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

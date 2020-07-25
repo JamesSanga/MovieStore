@@ -1,10 +1,25 @@
 <resources>
-    <string name="app_name">MovieStore</string>
-    <string name="title_activity_scrolling">ScrollingActivity</string>
-    <string name="favorite">Favorite Movies</string>
-    <string name="popular">Most Popular</string>
-    <string name="most_rated">Highest Rated</string>
-    <string name="sort_order">Sort Order</string>
-    <string name="key">sortOder</string>
-    <string name="action_settings">Settings</string>
+        <string name="app_name">MovieStore</string>
+        <string name="title_activity_scrolling">ScrollingActivity</string>
+        <string name="favorite_movies">Favorite Movies</string>
+        <string name="popular">Most Popular</string>
+        <string name="most_rated">Highest Rated</string>
+        <string name="sort_order">Sort Order</string>
+        <string name="key">sortOder</string>
+        <string name="action_settings">Settings</string>
+        <string name="related_movies">Similar/Related movies</string>
+        <string name="add_favorite">Favorite</string>
+        <string name="about_move">About movie</string>
+        <string name="move_details">Movie details</string>
+        <string name="empty_view">Once you add favorite movies will appear here</string>
+        <string name="clear_favorite">Clear Favorites</string>
+
+        <!-- TODO: Remove or change this placeholder text -->
+        <string name="hello_blank_fragment">Hello blank fragment</string>
+        <string name="mvvm">MVVM</string>
+        <string name="desc">Description</string>
+        <string name="title">Title</string>
+        <string name="priority">Priority</string>
+        <string name="note">Add favorite</string>
+        <string name="add_mvvm_favorite">Add mvvm favorite</string>
 </resources>

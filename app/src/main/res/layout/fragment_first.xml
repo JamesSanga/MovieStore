@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/view_to_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:background="@color/black"
+            android:id="@+id/recycler_view_trailer"
+            android:layout_width="match_parent"
+            tools:listitem="@layout/trailer_view"
+            android:layout_height="200dp">
+        </android.support.v7.widget.RecyclerView>
+
+        <ImageView
+            android:contentDescription="@string/app_name"
+            android:id="@+id/movie_trailer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+
+        <ImageView
+                android:id="@+id/poster_image"
+                android:layout_width="150dp"
+                android:layout_height="250dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="140dp"
+                android:background="@color/lightGray"
+                android:contentDescription="@string/app_name" />
+        <TextView
+            android:id="@+id/movie_title"
+            android:layout_below="@+id/movie_trailer"
+            android:layout_toEndOf="@+id/poster_image"
+            android:layout_margin="10dp"
+            android:text="@string/app_name"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/movie_date"
+            android:layout_below="@+id/movie_title"
+            android:layout_toEndOf="@+id/poster_image"
+            android:layout_marginStart="10dp"
+            android:text="@string/app_name"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/add_to_favorite"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginTop="@dimen/app_bar_height"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ic_favorite_border_black_24dp"/>
+        <TextView
+            android:id="@+id/about_move"
+            android:layout_below="@+id/poster_image"
+            android:text="@string/about_move"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/movie_details"
+            android:layout_below="@+id/about_move"
+            android:layout_margin="10dp"
+            android:text="@string/app_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/similar_movies_title"
+            android:layout_below="@id/movie_details"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:layout_height="wrap_content" />
+        <com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
+            android:id="@+id/relatedMovies"
+            android:layout_below="@+id/similar_movies_title"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/related_layout"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            app:msrv_gravity="start"
+            app:msrv_ms_per_inch="100"
+            app:msrv_snap_count="1">
+        </com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView>
+
+        <ProgressBar
+            android:id="@+id/load_similar_movies"
+            android:layout_below="@+id/similar_movies_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+</ScrollView>
