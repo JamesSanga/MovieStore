@@ -111,7 +111,8 @@ public class FavoriteFragment extends Fragment implements FavoriteAdapter.dataLi
             @Override
             public void onChanged(@Nullable List<Favorite> favorites) {
                adapter.setFavoriteList(favorites);
-               if (favorites != null){
+               if (favorites != null)
+               if (favorites.size() > 0){
                    emptyTextView.setVisibility(View.GONE);
                }else emptyTextView.setVisibility(View.VISIBLE);
             }
